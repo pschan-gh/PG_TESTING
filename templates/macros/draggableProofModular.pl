@@ -55,9 +55,7 @@ sub new {
 		dnd => $dnd,
 		%options,
 	}, $class;
-	my $aux = $self->{proof};
-	warn $aux;
-	warn main::pretty_print $self->{proof}->value;
+	
 	return $self;
 }
 

@@ -75,28 +75,33 @@ class Bucket {
                 });
             });
             $bucketPool.find('.remove_bucket').click(function() {
-                $(this).closest('.dd-container').remove();
+                var bucketId = $(this).closest('.dd-container').attr('data-bucket-id');
+                var $container = $(this).closest('.dd-container');
+                $container.find('li').appendTo($bucketPool.find('.dd[data-bucket-id="0"] ol').first());
+                $('.hidden[data-bucket-id="' + bucketId + '"]').remove();
+                $container.remove();
+                el._nestableUpdate();
             });
             $bucketPool.parent().find('.reset_buckets').off();
             $bucketPool.parent().find('.reset_buckets').click(function() {
                 console.log('clicked');
-                // $bucketPool.find('.dd').nestable("destroy");
                 $bucketPool.find('.dd').each(function() {
-                    var bucketId = $(this).attr('data-bucket-id');
-                    $(this).find('ol.dd-list').remove();
-                    if ($('ol.hidden.default[data-bucket-id="' + bucketId + '"] li').length) {
-                        var $ddList = $('<ol class="dd-list"></ol>');                    
-                        $('ol.hidden.default[data-bucket-id="' + bucketId + '"] li').each(function() {
-                            var $item = $('<li><div class="dd-handle">' + $(this).html() + '</div></li>');
-                            $item.addClass('dd-item').attr('data-shuffled-index', $(this).attr('data-shuffled-index'));
-                            $ddList.append($item);
-                        });
-                        $(this).append($ddList);
-                    } else {
-                        if ($(this).find('.dd-empty').length == 0) {
-                            $(this).append('<div class="dd-empty"></div>');
-                        }
-                    }
+                    $(this).find('ol, .dd-empty').remove();
+                });
+                var $firstBucket = $bucketPool.find('.dd[data-bucket-id="0"]');
+                if ($('ol.hidden.default[data-bucket-id="0"] li').length) {
+                    var $ddList = $('<ol class="dd-list"></ol>');                    
+                    $('ol.hidden.default[data-bucket-id="0"] li').each(function() {
+                        var $item = $('<li><div class="dd-handle">' + $(this).html() + '</div></li>');
+                        $item.addClass('dd-item').attr('data-shuffled-index', $(this).attr('data-shuffled-index'));
+                        $ddList.append($item);
+                    });
+                    $firstBucket.append($ddList);
+                } 
+                $bucketPool.find('.dd').each(function() {
+                    if ($(this).find('.dd-empty').length == 0 && $(this).find('li').length == 0) {
+                        $(this).append('<div class="dd-empty"></div>');
+                    }               
                 });
                 
                 $(function() {                                   

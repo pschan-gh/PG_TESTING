@@ -21,14 +21,18 @@ sub new {
     my %options = (
 		AllowNewBuckets => 0,
 		@_
-	);  
+	);
+    
+    my $previous = $main::inputs_ref->{$answer_input_id} || "";
+    warn $previous;  
     $self = bless {        
         answer_input_id => $answer_input_id,        
         bucket_list => [],
         aggregate_list => [],
+        previous => $previous,
         %options,
     }, $class;
-    
+            
     return $self;
 }
 
@@ -36,8 +40,8 @@ sub addBucket {
     my $bucket_id = $n++;
     my $self = shift; 
     
-    my $list = shift;
-    my $container_id = shift;
+    my $list = shift || [];
+    my $container_id = shift || '';
     my $label = shift || ''; 
     my %options = (
 		removable => 0,
@@ -53,7 +57,12 @@ sub addBucket {
     };
     push(@{$self->{bucket_list}}, $bucket);
     push(@{$self->{aggregate_list}}, @{$list});
-    
+        
+}
+
+sub getPrevious {
+    my $self = shift; 
+    return $self->{previous};
 }
 
 sub ans_rule {
@@ -64,8 +73,8 @@ sub ans_rule {
     }
     my $out = '<div class="bucket_pool" data-ans="'.$self->{answer_input_id}.'">';
     $out .= main::NAMED_HIDDEN_ANS_RULE($self->{answer_input_id});    
-    $previous = $main::inputs_ref->{$self->{answer_input_id}} || "";
-        
+    my $previous = $self->{previous};
+    main::pretty_print $previous;        
     
     # duplicate full list in html DOM
     for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
