@@ -46,7 +46,6 @@ END_TEXT
 Context()->normalStrings;
 
 # Answer Evaluation
-# ANS($CorrectProof->cmp);
 ANS($CorrectProof->cmp);
 
 ENDDOCUMENT();

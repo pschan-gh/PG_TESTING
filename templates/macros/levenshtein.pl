@@ -1,3 +1,5 @@
+# TODO: Implement Damerau–Levenshtein to accomodate transpositions
+
 package levenshtein;
 
 sub levenshtein {
