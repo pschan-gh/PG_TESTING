@@ -97,15 +97,9 @@ class Bucket {
                     }
                 });
                 
-                $(function() {
-                    refreshAllCSS($bucketPool);                    
+                $(function() {                                   
                     el._nestableUpdate();
-                    // $bucketPool.find('.dd').nestable({
-                    //     group: answerInputId,
-                    //     maxDepth: 1,
-                    //     scroll: true,
-                    //     callback: function() {el._nestableUpdate()}
-                    // });  
+                    refreshAllCSS($bucketPool);
                 });
             });
             el._refreshCSS();
@@ -123,8 +117,9 @@ class Bucket {
 }
 
 function refreshAllCSS($bucketPool) {
-    $bucketPool.find('.dd-container').each(function() {        
-        refreshCSS($this);        
+    $bucketPool.find('.dd-container').each(function() {
+        var $container = $(this);
+        refreshCSS($container);
     });
 }
 
