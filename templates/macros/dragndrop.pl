@@ -70,6 +70,7 @@ sub ans_rule {
     $previous = $main::inputs_ref->{$self->{answer_input_id}} || "";
         
     
+    # duplicate full list in html DOM
     for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
         my $bucket = $self->{bucket_list}->[$i];
         $out .= "<ol class='hidden default' data-bucket-id='".$bucket->{bucket_id}."'>";
@@ -80,53 +81,36 @@ sub ans_rule {
     }
     
     my @optionsList = ();
-    if ($previous eq "") {
-        for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
-            my $bucket = $self->{bucket_list}->[$i];
-            my $DragNDropOptions =  JSON->new->encode({                
-                containerId => 'nestable-'.$bucket->{container_id}.'-container',
-                bucketId => $bucket->{bucket_id},
-                answerInputId => $self->{answer_input_id},
-                removable => $bucket->{removable},
-                # list => $self->{list},
-                # label => $bucket->{label},
-            });
-            push(@optionsList, $DragNDropOptions);
-            $out .= "<div class='hidden bucket' data-bucket-id='".$bucket->{bucket_id}."'>";
-            $out .= "<div class='label'>".$bucket->{label}."</div>"; 
-            $out .= "<ol class='answer'>";
+    
+    for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
+        my $bucket = $self->{bucket_list}->[$i];
+        my $DragNDropOptions =  JSON->new->encode({                
+            containerId => 'nestable-'.$bucket->{container_id}.'-container',
+            bucketId => $bucket->{bucket_id},
+            answerInputId => $self->{answer_input_id},
+            removable => $bucket->{removable},
+            # list => $self->{list}, # Somehow MathJax renders values within the JSON object 
+            # label => $bucket->{label},
+        });
+        push(@optionsList, $DragNDropOptions);
+        $out .= "<div class='hidden bucket' data-bucket-id='".$bucket->{bucket_id}."'>";
+        $out .= "<div class='label'>".$bucket->{label}."</div>"; 
+        $out .= "<ol class='answer'>";
+        if ($previous eq "") {
             for (my $j = 0; $j < @{$bucket->{list}}; $j++) {
                 $out .= "<li data-shuffled-index='".$j."'>".$bucket->{list}->[$j]."</li>";
             }
-            $out .= "</ol>";
-            $out .= "</div>"; 
-        }
-    } else {
-        my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
-        for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
-            my $bucket = $self->{bucket_list}->[$i];
-            my $DragNDropOptions =  JSON->new->encode({                
-                containerId => 'nestable-'.$bucket->{container_id}.'-container',
-                bucketId => $bucket->{bucket_id},
-                answerInputId => $self->{answer_input_id},
-                removable => $bucket->{removable},
-                # list => $self->{list},
-                # label => $bucket->{label},
-            });
-            push(@optionsList, $DragNDropOptions);
-            $out .= "<div class='hidden bucket' data-bucket-id='".$bucket->{bucket_id}."'>";
-            $out .= "<div class='label'>".$bucket->{label}."</div>"; 
-            $out .= "<ol class='answer'>";
+        } else {
             my @refList = split(',' , $matches[$i] =~ s/\(|\)|\s*//gr);
             warn main::pretty_print [ @refList ];
             for my $ref ( @refList ) {
                 $out .= "<li data-shuffled-index='".$ref."'>".$self->{aggregate_list}->[$ref]."</li>";
             }
-            $out .= "</ol>";
-            $out .= "</div>"; 
-            
         }
-    }    
+        $out .= "</ol>";
+        $out .= "</div>"; 
+    }
+    
     $out .= "</div>";
     $out .= "\n<script type='text/javascript'>\n";
     for $options ( @optionsList ) {
