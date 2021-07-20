@@ -40,7 +40,7 @@ class Bucket {
             callback: function() {el._nestableUpdate()}
         });  
         
-        this.ddUpdate();
+        this._ddUpdate();
     }
     
     _nestableUpdate(e) {
@@ -59,8 +59,8 @@ class Bucket {
         $("#" +  this.answerInputId).val(buckets.join(","));
     }
     
-    ddUpdate() {
-        console.log('ddUpdate');
+    _ddUpdate() {
+        console.log('_ddUpdate');
         var answerInputId = this.answerInputId;
         var $bucketPool = $('.bucket_pool[data-ans="' + answerInputId + '"]').first();
         console.log($bucketPool);
@@ -108,142 +108,84 @@ class Bucket {
                     // });  
                 });
             });
-            el.refreshCSS();
+            el._refreshCSS();
         });    
     }
     
-    refreshCSS() {
+    _refreshCSS() {
         var answerInputId = this.answerInputId;
         var bucketId = this.bucketId;
         var $bucketPool = $('.bucket_pool[data-ans="' + answerInputId + '"]').first();
         var $container = $bucketPool.find('.dd-container[data-bucket-id="' + bucketId + '"]').first();
         
-        $container.css({width: '350px',
-        float: 'left',
-        margin: '10px',
-        padding: '0',
-        color: '#000000',
-        border: '1px solid #388E8E',
-        borderRadius: '5px',
-        textAlign: 'center'});
-    
-        $container.find('.nestable-label').css({
-            margin: '10px 0 10px 0',
-        });
-    
-        $container.find('.dd, .dd-list, .dd-item').css({
-            display: 'block',
-            position: 'relative',
-            listStyle: 'none',
-            margin: '0',
-            padding: '0',
-            minHeight: '30px',
-        });
-    
-        $container.find('.dd-empty, .dd-handle, .dd-placeholder').css( {
-            display: 'block',
-            position: 'relative',
-            margin: '0 10px 10px 10px',
-            padding: '4px',
-            minHeight: '30px',
-            boxSizing: 'border-box',
-            borderRadius: '5px',
-        });
-        $container.find('.dd-handle').css({
-            background: '#F5DEB3',
-            border: '1px solid #388E8E',
-            textAlign: 'center',
-            height: 'auto',
-        });
-        $container.find('.dd-handle:hover').css({
-            cursor: 'pointer',
-            background: '#EEE3CE',
-            color: '#222'
-        });
-        $container.find('.dd-placeholder').css({
-            background: '#f2fbff',
-            border: '1px dashed #b6bcbf',
-        });
-        $container.find('.dd-dragel').css({
-            position: 'absolute',
-            pointerEvents: 'none',
-            zIndex: '9999',
-        });
-        $container.find('.dd-dragel > .dd-item .dd-handle').css( {
-            marginTop: '0',
-        });
-        $container.find('.dd-dragel .dd-handle').css({
-            '-webkit-box-shadow': '2px 4px 6px 0 rgba(0,0,0,.1)',
-            'box-shadow': '2px 4px 6px 0 rgba(0,0,0,.1)',
-            'opacity': '0.8',
-        });
+        refreshCSS($container);
     }
 }
 
 function refreshAllCSS($bucketPool) {
-    
-    var $container = $bucketPool.find('.dd-container').each(function() {
-        var $container = $(this);
-    
-        $container.css({width: '350px',
-        float: 'left',
-        margin: '10px',
-        padding: '0',
-        color: '#000000',
-        border: '1px solid #388E8E',
-        borderRadius: '5px',
-        textAlign: 'center'});
-        
-        $container.find('.nestable-label').css({
-            margin: '10px 0 10px 0',
-        });
-        
-        $container.find('.dd, .dd-list, .dd-item').css({
-            display: 'block',
-            position: 'relative',
-            listStyle: 'none',
-            margin: '0',
-            padding: '0',
-            minHeight: '30px',
-        });
-        
-        $container.find('.dd-empty, .dd-handle, .dd-placeholder').css( {
-            display: 'block',
-            position: 'relative',
-            margin: '0 10px 10px 10px',
-            padding: '4px',
-            minHeight: '30px',
-            boxSizing: 'border-box',
-            borderRadius: '5px',
-        });
-        $container.find('.dd-handle').css({
-            background: '#F5DEB3',
-            border: '1px solid #388E8E',
-            textAlign: 'center',
-            height: 'auto',
-        });
-        $container.find('.dd-handle:hover').css({
-            cursor: 'pointer',
-            background: '#EEE3CE',
-            color: '#222'
-        });
-        $container.find('.dd-placeholder').css({
-            background: '#f2fbff',
-            border: '1px dashed #b6bcbf',
-        });
-        $container.find('.dd-dragel').css({
-            position: 'absolute',
-            pointerEvents: 'none',
-            zIndex: '9999',
-        });
-        $container.find('.dd-dragel > .dd-item .dd-handle').css( {
-            marginTop: '0',
-        });
-        $container.find('.dd-dragel .dd-handle').css({
-            '-webkit-box-shadow': '2px 4px 6px 0 rgba(0,0,0,.1)',
-            'box-shadow': '2px 4px 6px 0 rgba(0,0,0,.1)',
-            'opacity': '0.8',
-        });
+    $bucketPool.find('.dd-container').each(function() {        
+        refreshCSS($this);        
     });
 }
 
+function refreshCSS($container) {
+    $container.css({width: '350px',
+    float: 'left',
+    margin: '10px',
+    padding: '0',
+    color: '#000000',
+    border: '1px solid #388E8E',
+    borderRadius: '5px',
+    textAlign: 'center'});
+
+    $container.find('.nestable-label').css({
+        margin: '10px 0 10px 0',
+    });
+
+    $container.find('.dd, .dd-list, .dd-item').css({
+        display: 'block',
+        position: 'relative',
+        listStyle: 'none',
+        margin: '0',
+        padding: '0',
+        minHeight: '30px',
+    });
+
+    $container.find('.dd-empty, .dd-handle, .dd-placeholder').css( {
+        display: 'block',
+        position: 'relative',
+        margin: '0 10px 10px 10px',
+        padding: '4px',
+        minHeight: '30px',
+        boxSizing: 'border-box',
+        borderRadius: '5px',
+    });
+    $container.find('.dd-handle').css({
+        background: '#F5DEB3',
+        border: '1px solid #388E8E',
+        textAlign: 'center',
+        height: 'auto',
+    });
+    $container.find('.dd-handle:hover').css({
+        cursor: 'pointer',
+        background: '#EEE3CE',
+        color: '#222'
+    });
+    $container.find('.dd-placeholder').css({
+        background: '#f2fbff',
+        border: '1px dashed #b6bcbf',
+    });
+    $container.find('.dd-dragel').css({
+        position: 'absolute',
+        pointerEvents: 'none',
+        zIndex: '9999',
+    });
+    $container.find('.dd-dragel > .dd-item .dd-handle').css( {
+        marginTop: '0',
+    });
+    $container.find('.dd-dragel .dd-handle').css({
+        '-webkit-box-shadow': '2px 4px 6px 0 rgba(0,0,0,.1)',
+        'box-shadow': '2px 4px 6px 0 rgba(0,0,0,.1)',
+        'opacity': '0.8',
+    });
+}
