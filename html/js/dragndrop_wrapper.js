@@ -3,30 +3,32 @@ console.log('dnd wrapper loaded');
 class Bucket {
     constructor(serverData) {
         console.log(serverData);
+        console.log(aggregate);
         this.answerInputId = serverData['answerInputId'];
         this.bucketId = serverData['bucketId'];
-        console.log('new bucket');
+        this.list = serverData['list'];
+        this.label = serverData['label'];
+        this.aggregate = aggregate[this.answerInputId];
+        console.log(this.aggregate);
         
         var answerInputId = this.answerInputId;
         var bucketId = this.bucketId;
         var $bucketPool = $('.bucket_pool[data-ans="' + answerInputId + '"]').first();
                 
         var $newBucket = $('<div id="nestable-' + bucketId + '-container" class="dd-container"></div>').attr('data-bucket-id', bucketId);
-        var label = '';
-        $bucketPool.find('.hidden.bucket[data-bucket-id="' + bucketId + '"] div.label').first().each(function() { 
-            label += $(this).html();
-        });
-        $newBucket.append($('<div class="nestable-label">' + label + '</div>'));
-        $newBucket.append($('<div class="dd" data-bucket-id="' + bucketId + '"></div>'));
+    
+        $newBucket.append($('<div class="nestable-label">' + this.label + '</div>'));
+        $newBucket.append($('<div class="dd" data-bucket-id="' + this.bucketId + '"></div>'));
         if (serverData['removable'] != 0) {
             $newBucket.append($('<a class="btn remove_bucket">Remove</a>'));
         }
-                        
-        if ($bucketPool.find('.hidden.bucket[data-bucket-id="' + bucketId + '"] ol.answer li').length) {
-            var $ddList = $('<ol class="dd-list"></ol>').attr('data-bucket-id', bucketId);            
-            $bucketPool.find('.hidden.bucket[data-bucket-id="' + bucketId + '"] ol.answer li').each(function(index) {
-                var $item = $('<li><div class="dd-handle">' + $(this).html() + '</div></li>');
-                $item.addClass('dd-item').attr('data-shuffled-index', $(this).attr('data-shuffled-index'));
+        
+        if (this.list.length) {
+            var $ddList = $('<ol class="dd-list"></ol>').attr('data-bucket-id', bucketId);
+            var $item;
+            this.list.forEach(listItem => {
+                $item = $('<li><div class="dd-handle">' + listItem['item'] + '</div></li>');
+                $item.addClass('dd-item').attr('data-shuffled-index', listItem['shuffled_index']);
                 $ddList.append($item);
             });
             $newBucket.find('.dd').first().append($ddList);
@@ -80,7 +82,7 @@ class Bucket {
                 var bucketId = $(this).closest('.dd-container').attr('data-bucket-id');
                 var $container = $(this).closest('.dd-container');
                 $container.find('li').appendTo($bucketPool.find('.dd[data-bucket-id="0"] ol').first());
-                $('.hidden[data-bucket-id="' + bucketId + '"]').remove();
+                // $('.hidden[data-bucket-id="' + bucketId + '"]').remove();
                 $container.remove();
                 el._nestableUpdate();
             });
@@ -91,13 +93,16 @@ class Bucket {
                     $(this).find('ol, .dd-empty').remove();
                 });
                 var $firstBucket = $bucketPool.find('.dd[data-bucket-id="0"]');
-                if ($('ol.hidden.default[data-bucket-id="0"] li').length) {
+                console.log(el.aggregate['list']);
+                if ( el.aggregate['list'].length ) {
                     var $ddList = $('<ol class="dd-list"></ol>');                    
-                    $('ol.hidden.default[data-bucket-id="0"] li').each(function() {
-                        var $item = $('<li><div class="dd-handle">' + $(this).html() + '</div></li>');
-                        $item.addClass('dd-item').attr('data-shuffled-index', $(this).attr('data-shuffled-index'));
+                    // $('ol.hidden.default[data-bucket-id="0"] li').each(function() {
+                    el.aggregate['list'].forEach((listItem, index) => {
+                        var $item = $('<li><div class="dd-handle">' + listItem + '</div></li>');
+                        $item.addClass('dd-item').attr('data-shuffled-index', index);
                         $ddList.append($item);
                     });
+                    // });
                     $firstBucket.append($ddList);
                 } 
                 $bucketPool.find('.dd').each(function() {

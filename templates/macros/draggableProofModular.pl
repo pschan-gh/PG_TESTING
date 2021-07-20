@@ -69,18 +69,15 @@ sub new {
 		
 	return $self;
 }
-
-# sub lines {my $self = shift; return @{$self->{lines}}}
-# sub numNeeded {(shift)->{numNeeded}}
-# sub numProvided {(shift)->{numProvided}}
-# sub order {my $self = shift; return @{$self->{order}}}
-# sub unorder {my $self = shift; return @{$self->{unorder}}}
+sub loadJS {
+	my $self = shift;
+	return $self->{dnd}->toHTML;
+}
 
 sub Print {
 	my $self = shift;
 
 	if ($main::displayMode ne "TeX") { # HTML mode
-
 		return join("\n",
 			'<div style="min-width:750px;">',
 			$self->{dnd}->ans_rule,
@@ -91,9 +88,7 @@ sub Print {
 		return join("\n",
 			$self->{dnd}->ans_rule,
 		);
-
 	}
-
 }
 
 sub cmp {

@@ -25,6 +25,7 @@ SourceLabel => "Choose from these",
 TargetLabel =>  "Proof of \(a*b=b*a\):"
 );
 
+
 Context()->texStrings;
 
 BEGIN_TEXT
@@ -41,6 +42,7 @@ $PAR
 \{ $CorrectProof->Print \}
 
 END_TEXT
+main::TEXT($CorrectProof->loadJS);
 Context()->normalStrings;
 
 # Answer Evaluation
