@@ -101,6 +101,7 @@ sub ans_rule {
                 $out .= "<li data-shuffled-index='".$j."'>".$bucket->{list}->[$j]."</li>";
             }
         } else {
+            my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
             my @refList = split(',' , $matches[$i] =~ s/\(|\)|\s*//gr);
             warn main::pretty_print [ @refList ];
             for my $ref ( @refList ) {
