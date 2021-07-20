@@ -3,7 +3,6 @@ loadMacros(
 "PGstandard.pl",
 "MathObjects.pl",
 "draggableProofModular.pl",
-"levenshtein.pl"
 );
 
 TEXT(beginproblem());

@@ -12,9 +12,11 @@ class Bucket {
         var $bucketPool = $('.bucket_pool[data-ans="' + answerInputId + '"]').first();
                 
         var $newBucket = $('<div id="nestable-' + bucketId + '-container" class="dd-container"></div>').attr('data-bucket-id', bucketId);
-        $bucketPool.find('.hidden.bucket[data-bucket-id="' + bucketId + '"] div.label').each(function() {
-            $newBucket.append($('<div class="nestable-label">' + $(this).html() + '</div>'));
+        var label = '';
+        $bucketPool.find('.hidden.bucket[data-bucket-id="' + bucketId + '"] div.label').first().each(function() { 
+            label += $(this).html();
         });
+        $newBucket.append($('<div class="nestable-label">' + label + '</div>'));
         $newBucket.append($('<div class="dd" data-bucket-id="' + bucketId + '"></div>'));
         if (serverData['removable'] != 0) {
             $newBucket.append($('<a class="btn remove_bucket">Remove</a>'));
