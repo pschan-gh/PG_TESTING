@@ -13,6 +13,7 @@ sub _draggableProofModular_init {
 }
 
 package draggableProofModular;
+# our @ISA = qw(Value::List);
 
 sub new {
 	my $self = shift; 
@@ -89,44 +90,41 @@ sub Print {
 }
 
 sub cmp {
-	my $self = shift;
+	my $self = shift;	
 	return $self->{proof}->cmp(ordered => 1, removeParens => 0)->withPreFilter("erase")->withPostFilter(sub {$self->filter(@_)});
 }
 
 sub filter {
-	my $self = shift; my $ans = shift;
+	my $self = shift; my $anshash = shift;
 		
 	my @lines = @{$self->{lines}}; 
 	my @order = @{$self->{order}};
-	# my $correct = $ans->{correct_ans}; 
-	my $student = $ans->{student_ans}; 	
+	my $student = $anshash->{student_ans}; 	
 	
-	my @matches = ( main::List($ans->{student_ans})->string =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
-	warn 'matches';
-	warn main::pretty_print [ @matches ];
+	my @matches = ( $anshash->{student_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
 	my $actual_answer = $matches[1] =~ s/\(|\)|\s*//gr;
 	
-	$ans->{student_ans} = main::List(split(',', $actual_answer));
-	
-	@matches = ( main::List($ans->{correct_ans})->string =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
+	@matches = ( $anshash->{correct_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
 	my $correct = $matches[1] =~ s/\(|\)|\s*//gr;
 	
-	$ans->{correct_ans} = $correct;
-	$ans->{original_student_ans} = $ans->{student_ans};
-	$ans->{student_value} = $ans->{student_ans};
-	$ans->{student_formula} = $ans->{student_ans};
+	$anshash->{correct_ans} = main::List($correct); # change to main::Set if order does not matter
+	$anshash->{student_ans} = main::List($actual_answer); # change to main::Set if order does not matter
+	$anshash->{original_student_ans} = $anshash->{student_ans};
+	$anshash->{student_value} = $anshash->{student_ans};
+	$anshash->{student_formula} = $anshash->{student_ans};
 	
-	if ($ans->{correct_ans} eq $ans->{student_ans}) {
-		$ans->{score} = 1;
+	if ($anshash->{correct_ans} == $anshash->{student_ans}) {
+		$anshash->{score} = 1;
 	}
 	
 	my @correct = @lines[map {@order[$_]} split(/,/, $correct)];
 	my @student = @lines[map {@order[$_]} split(',', $actual_answer =~ s/\(|\)|\s*//gr)];
-	# 
-	$ans->{student_ans} = "(see preview)";
-	$ans->{correct_ans_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@correct)."}\\end{array}";
-	$ans->{correct_ans} = join("<br />",@correct);
-	$ans->{preview_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@student)."}\\end{array}";
-	return $ans;
+	 
+	$anshash->{student_ans} = "(see preview)";
+	$anshash->{correct_ans_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@correct)."}\\end{array}";
+	$anshash->{correct_ans} = join("<br />",@correct);
+	$anshash->{preview_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@student)."}\\end{array}";
+	
+	return $anshash;
 }
 1;

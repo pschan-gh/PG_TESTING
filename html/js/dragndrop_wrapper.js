@@ -93,7 +93,9 @@ class Bucket {
                         });
                         $(this).append($ddList);
                     } else {
-                        $(this).append('<div class="dd-empty"></div>');
+                        if ($(this).find('.dd-empty').length == 0) {
+                            $(this).append('<div class="dd-empty"></div>');
+                        }
                     }
                 });
                 

@@ -9,9 +9,6 @@ sub _dragndrop_init {
   main::PG_restricted_eval("sub DragNDrop {new DragNDrop(\@_)}");
 } 
 
-loadMacros("MathObjects.pl");
-our @ISA = qw(Value::List);
-
 package DragNDrop;
 
 my $n = 0;
