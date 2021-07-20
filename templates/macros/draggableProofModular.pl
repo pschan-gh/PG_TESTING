@@ -111,7 +111,7 @@ sub filter {
 	$anshash->{student_value} = $anshash->{student_ans};
 	$anshash->{student_formula} = $anshash->{student_ans};
 	
-	if ($anshash->{correct_ans} == $anshash->{student_ans}) {
+	if ($anshash->{correct_ans} eq $anshash->{student_ans}) {
 		$anshash->{score} = 1;
 	}
 	
@@ -122,7 +122,7 @@ sub filter {
 	$anshash->{correct_ans_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@correct)."}\\end{array}";
 	$anshash->{correct_ans} = join("<br />",@correct);
 	$anshash->{preview_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@student)."}\\end{array}";
-	
+
 	return $anshash;
 }
 1;
