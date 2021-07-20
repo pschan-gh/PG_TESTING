@@ -39,7 +39,7 @@ class Bucket {
             scroll: true,
             callback: function() {el._nestableUpdate()}
         });  
-        
+        this._nestableUpdate()
         this._ddUpdate();
     }
     

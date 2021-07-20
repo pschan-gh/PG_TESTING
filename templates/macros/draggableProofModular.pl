@@ -4,6 +4,7 @@
 
 loadMacros("PGchoicemacros.pl",
 "MathObjects.pl",
+"levenshtein.pl",
 "dragndrop.pl"
 );
 
@@ -25,6 +26,7 @@ sub new {
 		SourceLabel => "Choose from these sentences:",
 		TargetLabel => "Your Proof:",
 		NumBuckets => 2,
+		Levenshtein => 0,
 		@_
 	);
 	
@@ -96,8 +98,11 @@ sub Print {
 
 sub cmp {
 	my $self = shift;	
-	# return $self->{proof}->cmp(ordered => 1, removeParens => 0)->withPreFilter("erase")->withPostFilter(sub {$self->filter(@_)});
-	return $self->{proof}->cmp(ordered => 1, removeParens => 1)->withPreFilter("erase")->withPostFilter(sub {$self->filter(@_)});
+	if ($self->{Levenshtein} == 0) {
+		return $self->{proof}->cmp(ordered => 1, removeParens => 1)->withPreFilter("erase")->withPostFilter(sub {$self->filter(@_)});
+	} else {
+		return $self->{proof}->cmp(ordered => 1, removeParens => 1)->withPreFilter("erase")->withPostFilter(sub {$self->levenshtein_filter(@_)});
+	}
 }
 
 sub filter {
@@ -105,17 +110,16 @@ sub filter {
 		
 	my @lines = @{$self->{lines}}; 
 	my @order = @{$self->{order}};
-	my $student = $anshash->{student_ans}; 	
 	
 	my $actual_answer = $anshash->{student_ans} =~ s/\(|\)|\s*//gr;
 	my $correct = $anshash->{correct_ans} =~ s/\(|\)|\s*//gr;
 	
 	if ($self->{NumBuckets} == 2) {
 		my @matches = ( $anshash->{student_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
-		$actual_answer = $matches[1] =~ s/\(|\)|\s*//gr;
+		$actual_answer = @matches == 2 ? $matches[1] =~ s/\(|\)|\s*//gr : '';
 		
 		@matches = ( $anshash->{correct_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
-		$correct = $matches[1] =~ s/\(|\)|\s*//gr;
+		$correct = @matches == 2 ? $matches[1] =~ s/\(|\)|\s*//gr : '';
 		
 		$anshash->{correct_ans} = main::List($correct); # change to main::Set if order does not matter
 		$anshash->{student_ans} = main::List($actual_answer); # change to main::Set if order does not matter
@@ -135,7 +139,43 @@ sub filter {
 	$anshash->{correct_ans_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@correct)."}\\end{array}";
 	$anshash->{correct_ans} = join("<br />",@correct);
 	$anshash->{preview_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@student)."}\\end{array}";
+	
+	return $anshash;
+}
 
+sub levenshtein_filter {
+	my $self = shift; my $anshash = shift;
+		
+	my @lines = @{$self->{lines}}; 
+	my @order = @{$self->{order}};
+	
+	my $actual_answer = $anshash->{student_ans} =~ s/\(|\)|\s*//gr;
+	my $correct = $anshash->{correct_ans} =~ s/\(|\)|\s*//gr;
+	
+	if ($self->{NumBuckets} == 2) {
+		my @matches = ( $anshash->{student_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
+		$actual_answer = @matches == 2 ? $matches[1] =~ s/\(|\)|\s*//gr : '';
+		
+		@matches = ( $anshash->{correct_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
+		$correct = @matches == 2 ? $matches[1] =~ s/\(|\)|\s*//gr : '';
+		
+		$anshash->{correct_ans} = main::List($correct); # change to main::Set if order does not matter
+		$anshash->{student_ans} = main::List($actual_answer); # change to main::Set if order does not matter
+		$anshash->{original_student_ans} = $anshash->{student_ans};
+		$anshash->{student_value} = $anshash->{student_ans};
+		$anshash->{student_formula} = $anshash->{student_ans};
+		
+	}
+	
+	$anshash->{score} = 1 - levenshtein::levenshtein($correct, $actual_answer, ',');
+	 
+	my @correct = @lines[map {@order[$_]} split(/,/, $correct)];
+	my @student = @lines[map {@order[$_]} split(',', $actual_answer)];
+	$anshash->{student_ans} = "(see preview)";
+	$anshash->{correct_ans_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@correct)."}\\end{array}";
+	$anshash->{correct_ans} = join("<br />",@correct);
+	$anshash->{preview_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@student)."}\\end{array}";
+	
 	return $anshash;
 }
 1;
