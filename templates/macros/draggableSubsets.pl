@@ -47,8 +47,11 @@ sub new {
 	} else {
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
 		for(my $i = 0; $i < @matches; $i++) {
+			my $match = @matches[$i] =~ s/\(|\)//gr;
+			# warn $match;
 			my $removable = $i == 0 ? 0 : 1;
-			$dnd->addBucket($shuffled_set, '', removable => $removable);
+			warn main::pretty_print [ map{ $shuffled_set->[$_] } split(',', $match) ];
+			$dnd->addBucket([ map{ $shuffled_set->[$_] } split(',', $match) ], '', removable => $removable);
 		}
 	}
 		
