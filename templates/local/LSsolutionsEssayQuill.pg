@@ -1,0 +1,28 @@
+DOCUMENT();
+#Load the Essay Macros
+loadMacros("PG.pl","PGbasicmacros.pl","PGanswermacros.pl","MathObjects.pl","essayQuill.pl");
+
+$choices = ["for all", "there exist", "there exists", "we have", "therefore", "hence", "so", "Given", "if", "and", "only if", "if and only if", "such that"];
+$EssayQuill = EssayQuill($choices);
+BEGIN_TEXT
+$BCENTER
+$BBOLD OPTIONAL EXPERIMENTAL PROBLEM $EBOLD
+$ECENTER
+$HR
+In the space below, explain why the following statement is true:
+$BCENTER
+Let \(C\) be a \(m \times n\) matrix. Let \(\vec{u}, \vec{z}\) be vectors
+in \(\mathbb{R}^n\).
+
+If \(\vec{u}\) is a solution to \(\mathcal{LS}\left(C, \vec{d}\right)\),
+and \(\vec{u} + \vec{z}\) is a solution to \(\mathcal{LS}\left(C, \vec{d}\right)\),
+then \(\vec{z}\) is necessarily a solution to \(\mathcal{LS}\left(C, \vec{0}\right)\)
+$ECENTER
+$HR
+\{
+$EssayQuill->Print();
+\}
+END_TEXT
+
+ANS($EssayQuill->cmp);
+ENDDOCUMENT(); 

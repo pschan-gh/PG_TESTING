@@ -1,0 +1,55 @@
+DOCUMENT();
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"contextArbitraryString.pl",
+"draggableProofLevenshtein.pl"
+);
+
+TEXT(beginproblem());
+
+$CorrectProof = DraggableProofLevenshtein([
+"\(\hphantom{=}\;a*b\)",
+"\(=a*e*b\qquad\) by the defining property of the identity element",
+"\(=a*(a*b*a*b)*b\qquad\) since \(e=(a*b)*(a*b)\)",
+"\(=(a*a)*(b*a)*(b*b)\)",
+"\(=e*(b*a)*e\qquad\) since \(a*a=b*b=e\)",
+"\(=b*a\qquad\) by the defining property of the identity element"
+],
+[
+"It suffices to show that \(a*b*a^{-1}*b^{-1} = e\).",
+"Since \(x * x = e\) for all \(x \in G\), we have: \(a*b*a^{-1}*b^{-1}\)",
+"\( = a*b*a*b\)",
+"\( = (a*b)*(a * b)\)",
+"\( = e\)",
+],
+[],
+SourceLabel => "Choose from these",
+TargetLabel =>  "Proof of \(a*b=b*a\):",
+);
+
+Context()->texStrings;
+
+BEGIN_TEXT
+
+Show that every group \(G\) with identity \(e\) and such that \(x*x=e\) for all \(x \in G\) is abelian.
+
+$PAR
+
+Let \(a,b\in G\).  We need to show \(a*b=b*a\).
+
+Drag and rearrange the following lines in the correct order to form the desired proof.
+
+$PAR
+\{ $CorrectProof->Print \}
+
+END_TEXT
+Context()->normalStrings;
+
+# Answer Evaluation
+# ANS(levenshtein_cmp($CorrectProof));
+# ANS($CorrectProof->levenshtein_cmp());
+ANS($CorrectProof->cmp);
+
+
+ENDDOCUMENT();

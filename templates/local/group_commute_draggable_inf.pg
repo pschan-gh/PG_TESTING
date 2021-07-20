@@ -1,0 +1,72 @@
+DOCUMENT();
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"unescape.pl",
+"draggableProof2inf.pl"
+);
+
+TEXT(beginproblem());
+my $proof = {};
+my @proof_array;
+$proof_array[0] = "\(\hphantom{=}\;a*b\)";
+$proof_array[1] = "\(=a*e*b\qquad\) by the defining property of the identity element";
+$proof_array[2] = "\(=a*(a*b*a*b)*b\qquad\) since \(e=(a*b)*(a*b)\)";
+$proof_array[3] = "\(=(a*a)*(b*a)*(b*b)\)";
+$proof_array[4] ="\(=e*(b*a)*e\qquad\) since \(a*a=b*b=e\)";
+$proof_array[5] = "\(=b*a\qquad\) by the defining property of the identity element";
+$proof->{statements} = [ @proof_array ];
+$proof->{inf} = [(
+[0, 0, 0, 0, 0, 0],
+[1, 0, 0, 0, 0, 0],
+[0, 1, 0, 0, 0, 0],
+[0, 0, 1, 0, 0, 0],
+[0, 0, 0, 1, 0 ,0],
+[0, 0, 0, 0, 1 ,0]
+)];
+
+my $proof2 = {};
+my @proof2_array;
+$proof2_array[0] = "It suffices to show that \(a*b*a^{-1}*b^{-1} = e\).";
+$proof2_array[1] = "Since \(x * x = e\) for all \(x \in G\), we have: \(a*b*a^{-1}*b^{-1}\)";
+$proof2_array[2] = "\( = a*b*a*b\)";
+$proof2_array[3] = "\( = (a*b)*(a * b)\)";
+$proof2_array[4] = "\( = e\)";
+$proof2->{statements} = [ @proof2_array ];
+$proof2->{inf} = [(
+[0, 0, 0, 0, 0],
+[1, 0, 0, 0, 0],
+[0, 1, 0, 0, 0],
+[0, 0, 1, 0, 0],
+[0, 0, 0, 1, 0]
+)];
+
+$CorrectProof = DraggableProof2inf($proof, $proof2, {});
+
+Context()->texStrings;
+
+BEGIN_TEXT
+
+Show that every group \(G\) with identity \(e\) and such that \(x*x=e\) for all \(x \in G\) is abelian.
+
+$PAR
+
+Let \(a,b\in G\).  We need to show \(a*b=b*a\).
+
+Drag and rearrange the following lines in the correct order to form the desired proof.
+
+$PAR
+\{ $CorrectProof->Print \}
+
+END_TEXT
+TEXT(MODES(
+     TeX        => "",
+     HTML       =>  $javaScript,
+ ));
+Context()->normalStrings;
+
+# Answer Evaluation
+ANS($CorrectProof->cmp);
+
+
+ENDDOCUMENT();
