@@ -41,7 +41,7 @@ sub addBucket {
     my $self = shift; 
     
     my $list = shift || [];
-    my $container_id = shift || '';
+    # my $container_id = shift || '';
     my $label = shift || ''; 
     my %options = (
 		removable => 0,
@@ -50,7 +50,7 @@ sub addBucket {
     
     my $bucket = {
         list => $list,
-        container_id => $container_id,
+        # container_id => $container_id,
         bucket_id => $bucket_id,
         label => $label,
         removable => $options{removable},
@@ -91,7 +91,7 @@ sub ans_rule {
     for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
         my $bucket = $self->{bucket_list}->[$i];
         my $DragNDropOptions =  JSON->new->encode({                
-            containerId => 'nestable-'.$bucket->{container_id}.'-container',
+            # containerId => 'nestable-'.$bucket->{container_id}.'-container',
             bucketId => $bucket->{bucket_id},
             answerInputId => $self->{answer_input_id},
             removable => $bucket->{removable},

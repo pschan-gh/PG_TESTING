@@ -48,7 +48,7 @@ sub new {
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
 		for(my $i = 0; $i < @matches; $i++) {
 			my $removable = $i == 0 ? 0 : 1;
-			$dnd->addBucket($shuffled_set, '', '', removable => $removable);
+			$dnd->addBucket($shuffled_set, removable => $removable);
 		}
 	}
 		

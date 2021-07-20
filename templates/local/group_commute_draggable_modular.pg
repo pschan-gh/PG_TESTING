@@ -17,6 +17,9 @@ $CorrectProof = DraggableProofModular([
 "\(=b*a\qquad\) by the defining property of the identity element"
 ],
 [
+"It suffices to show that \(a*b*a^{-1}*b^{-1} = e\).",
+"Since \(x * x = e\) for all \(x \in G\), we have: \(a*b*a^{-1}*b^{-1}\)",
+"\( = a*b*a*b\)",
 ],
 SourceLabel => "Choose from these",
 TargetLabel =>  "Proof of \(a*b=b*a\):"

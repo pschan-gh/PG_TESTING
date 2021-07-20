@@ -24,7 +24,7 @@ sub new {
 	my %options = (
 		SourceLabel => "Choose from these sentences:",
 		TargetLabel => "Your Proof:",
-		# id => "$main::PG->{QUIZ_PREFIX}P$n",
+		NumBuckets => 2,
 		@_
 	);
 	
@@ -40,8 +40,10 @@ sub new {
 	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};
 	warn $ans_input_id;
 	my $dnd = new DragNDrop($ans_input_id, AllowNewBuckets => 0);
-	$dnd->addBucket($shuffled_lines, 'source', $options{'SourceLabel'});
-	$dnd->addBucket([], 'target', $options{'TargetLabel'});
+	
+	my $proof = $options{NumBuckets} == 2 ? 
+	main::List(main::List(@unorder[$numNeeded .. $numProvided - 1]), main::List(@unorder[0..$numNeeded-1]))
+	: main::List('('.join(',', @unorder[0..$numNeeded-1]).')');
 		
 	$self = bless {
 		lines => $lines,
@@ -49,13 +51,20 @@ sub new {
 		numNeeded => $numNeeded, 
 		numProvided => $numProvided,
 		order => \@order, 
-		unordered => \@unorder,
-		proof => main::List(main::List(), main::List(@unorder[0..$numNeeded-1])),
+		unorder => \@unorder,
+		proof => $proof,
 		ans_input_id => $ans_input_id,
 		dnd => $dnd,
 		%options,
 	}, $class;
 	
+	if ($self->{NumBuckets} == 2) {
+		$dnd->addBucket($shuffled_lines, $options{'SourceLabel'});
+		$dnd->addBucket([], $options{'TargetLabel'});
+	} elsif ($self->{NumBuckets} == 1) {
+		$dnd->addBucket($shuffled_lines, $options{'TargetLabel'});
+	}
+		
 	return $self;
 }
 
@@ -76,9 +85,7 @@ sub Print {
 			'<br clear="all" />',
 			'</div>',
 		);
-
 	} else { # TeX mode
-
 		return join("\n",
 			$self->{dnd}->ans_rule,
 		);
@@ -89,7 +96,8 @@ sub Print {
 
 sub cmp {
 	my $self = shift;	
-	return $self->{proof}->cmp(ordered => 1, removeParens => 0)->withPreFilter("erase")->withPostFilter(sub {$self->filter(@_)});
+	# return $self->{proof}->cmp(ordered => 1, removeParens => 0)->withPreFilter("erase")->withPostFilter(sub {$self->filter(@_)});
+	return $self->{proof}->cmp(ordered => 1, removeParens => 1)->withPreFilter("erase")->withPostFilter(sub {$self->filter(@_)});
 }
 
 sub filter {
@@ -99,20 +107,25 @@ sub filter {
 	my @order = @{$self->{order}};
 	my $student = $anshash->{student_ans}; 	
 	
-	my @matches = ( $anshash->{student_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
-	my $actual_answer = $matches[1] =~ s/\(|\)|\s*//gr;
+	my $actual_answer = $anshash->{student_ans};
+	my $correct = $anshash->{correct_ans};
 	
-	@matches = ( $anshash->{correct_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
-	my $correct = $matches[1] =~ s/\(|\)|\s*//gr;
-	
-	$anshash->{correct_ans} = main::List($correct); # change to main::Set if order does not matter
-	$anshash->{student_ans} = main::List($actual_answer); # change to main::Set if order does not matter
-	$anshash->{original_student_ans} = $anshash->{student_ans};
-	$anshash->{student_value} = $anshash->{student_ans};
-	$anshash->{student_formula} = $anshash->{student_ans};
-	
-	if ($anshash->{correct_ans} eq $anshash->{student_ans}) {
-		$anshash->{score} = 1;
+	if ($self->{NumBuckets} == 2) {
+		my @matches = ( $anshash->{student_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
+		$actual_answer = $matches[1] =~ s/\(|\)|\s*//gr;
+		
+		@matches = ( $anshash->{correct_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
+		$correct = $matches[1] =~ s/\(|\)|\s*//gr;
+		
+		$anshash->{correct_ans} = main::List($correct); # change to main::Set if order does not matter
+		$anshash->{student_ans} = main::List($actual_answer); # change to main::Set if order does not matter
+		$anshash->{original_student_ans} = $anshash->{student_ans};
+		$anshash->{student_value} = $anshash->{student_ans};
+		$anshash->{student_formula} = $anshash->{student_ans};
+		
+		if ($anshash->{correct_ans} eq $anshash->{student_ans}) {
+			$anshash->{score} = 1;
+		}
 	}
 	
 	my @correct = @lines[map {@order[$_]} split(/,/, $correct)];
