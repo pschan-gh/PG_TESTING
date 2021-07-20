@@ -107,8 +107,8 @@ sub filter {
 	my @order = @{$self->{order}};
 	my $student = $anshash->{student_ans}; 	
 	
-	my $actual_answer = $anshash->{student_ans};
-	my $correct = $anshash->{correct_ans};
+	my $actual_answer = $anshash->{student_ans} =~ s/\(|\)|\s*//gr;
+	my $correct = $anshash->{correct_ans} =~ s/\(|\)|\s*//gr;
 	
 	if ($self->{NumBuckets} == 2) {
 		my @matches = ( $anshash->{student_ans} =~ /(\(\d*(?:,\s*\d+)*\)|\d+)/g );
@@ -129,7 +129,7 @@ sub filter {
 	}
 	
 	my @correct = @lines[map {@order[$_]} split(/,/, $correct)];
-	my @student = @lines[map {@order[$_]} split(',', $actual_answer =~ s/\(|\)|\s*//gr)];
+	my @student = @lines[map {@order[$_]} split(',', $actual_answer)];
 	 
 	$anshash->{student_ans} = "(see preview)";
 	$anshash->{correct_ans_latex_string} = "\\begin{array}{l}\\text{".join("}\\\\\\text{",@correct)."}\\end{array}";
