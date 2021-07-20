@@ -43,6 +43,7 @@ $PAR
 
 END_TEXT
 Context()->normalStrings;
+main::TEXT($CorrectProof->loadJS);
 
 # Answer Evaluation
 ANS($CorrectProof->cmp);

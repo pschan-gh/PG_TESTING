@@ -42,8 +42,8 @@ $PAR
 \{ $CorrectProof->Print \}
 
 END_TEXT
-main::TEXT($CorrectProof->loadJS);
 Context()->normalStrings;
+main::TEXT($CorrectProof->loadJS);
 
 # Answer Evaluation
 ANS($CorrectProof->cmp);

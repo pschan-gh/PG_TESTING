@@ -57,7 +57,8 @@ sub addBucket {
     };
     push(@{$self->{bucket_list}}, $bucket);
     push(@{$self->{aggregate_list}}, @{$list});
-        
+
+    warn main::pretty_print [ @{$self->{aggregate_list}} ];
 }
 
 sub getPrevious {
@@ -117,11 +118,12 @@ sub toHTML {
         $out .= "\nnew Bucket($options);";
     }
     $out .= "\n</script>";
+    $out .= '</div>';
     $out .= "<br clear='all'><div><a class='btn reset_buckets'>reset</a>";    
     if ($self->{AllowNewBuckets} == 1) {
         $out .= "<a class='btn add_bucket' data-ans='".$self->{answer_input_id}."'>add bucket</a></div>";
     }
-    $out .= '</div>';
+    
     return $out;
 }
 

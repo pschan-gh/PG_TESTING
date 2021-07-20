@@ -23,8 +23,8 @@ class Bucket {
             $newBucket.append($('<a class="btn remove_bucket">Remove</a>'));
         }
         
-        if (this.list.length) {
-            var $ddList = $('<ol class="dd-list"></ol>').attr('data-bucket-id', bucketId);
+        if (this.list && this.list.length) {
+            var $ddList = $('<ol class="dd-list"></ol>').attr('data-bucket-id', this.bucketId);
             var $item;
             this.list.forEach(listItem => {
                 $item = $('<li><div class="dd-handle">' + listItem['item'] + '</div></li>');
@@ -76,6 +76,7 @@ class Bucket {
                     answerInputId: $(this).attr('data-ans'),
                     bucketId: +($('.dd').length) + 1,
                     removable: 1,
+                    label:'',
                 });
             });
             $bucketPool.find('.remove_bucket').click(function() {
@@ -94,12 +95,13 @@ class Bucket {
                 });
                 var $firstBucket = $bucketPool.find('.dd[data-bucket-id="0"]');
                 console.log(el.aggregate['list']);
+                $firstBucket.find('ol, .dd-empty').remove();
                 if ( el.aggregate['list'].length ) {
                     var $ddList = $('<ol class="dd-list"></ol>');                    
                     // $('ol.hidden.default[data-bucket-id="0"] li').each(function() {
                     el.aggregate['list'].forEach((listItem, index) => {
-                        var $item = $('<li><div class="dd-handle">' + listItem + '</div></li>');
-                        $item.addClass('dd-item').attr('data-shuffled-index', index);
+                        var $item = $('<li class="dd-item"><div class="dd-handle">' + listItem + '</div></li>');
+                        $item.attr('data-shuffled-index', index);
                         $ddList.append($item);
                     });
                     // });
