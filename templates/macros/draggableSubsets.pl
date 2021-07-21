@@ -21,6 +21,7 @@ sub new {
 	
 	my $set = shift || []; 
 	my $cosets = shift || []; 
+	my $default_indices = shift || [];
 	
 	my $numProvided = scalar(@$set);
 	my @order = main::shuffle($numProvided);
@@ -32,14 +33,32 @@ sub new {
 	warn main::pretty_print $set;
 	warn main::pretty_print $shuffled_set;
 	
+	warn main::pretty_print $default_indices;
+	my @shuffled_defaults = ();
+	if (@$default_indices) {
+		for my $default (@$default_indices) {
+			my @shuffled_default = map {$order[$_]} @$default;
+			push(@shuffled_defaults, [ @shuffled_default ]);
+		} 
+	} else {
+		@shuffled_defaults = ( [ 0..$numProvided-1 ] );
+	}
+	warn main::pretty_print [ @shuffled_defaults ];
+	
+	my $shuffled_defaults = [ @shuffled_defaults ];
 	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};	
-	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, AllowNewBuckets => 1);	
+	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, $shuffled_defaults, AllowNewBuckets => 1);	
 	
 	my $previous = $dnd->getPrevious;	
-	
-	if ($previous eq "") {
-		$dnd->addBucket([0..$numProvided-1]);
+	warn main::pretty_print $previous;
+	warn $previous; 
+	if ($previous == []) {
+		for my $default ( @shuffled_defaults ) {
+			warn $default;
+			$dnd->addBucket($default);
+		}
 	} else {
+		warn $previous;
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
 		for(my $i = 0; $i < @matches; $i++) {
 			my $match = @matches[$i] =~ s/\(|\)//gr;			
@@ -48,17 +67,16 @@ sub new {
 			warn main::pretty_print $indices;
 			$dnd->addBucket($indices, '', removable => $removable);
 		}
-	}
+	}	
 		
 	my @shuffled_cosets_array = ();
-	
 	for my $coset ( @$cosets ) {
 		my @shuffled_coset = map {$unorder[$_]} @$coset;
 		push(@shuffled_cosets_array, main::Set(join(',', @shuffled_coset)));
-	}
-	
+	}	
 	my $shuffled_cosets = main::List(@shuffled_cosets_array);
 			
+	
 	$self = bless {
 		set => $set,
 		shuffled_set => $shuffled_set,
@@ -71,11 +89,6 @@ sub new {
 	}, $class;
 	
 	return $self;
-}
-
-sub loadJS {
-	my $self = shift;
-	return $self->{dnd}->toHTML;
 }
 
 sub Print {

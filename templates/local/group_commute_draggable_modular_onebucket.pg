@@ -37,11 +37,14 @@ Let \(a,b\in G\).  We need to show \(a*b=b*a\).
 Drag and rearrange the following lines in the correct order to form the desired proof.
 
 $PAR
-\{ $CorrectProof->Print \}
+\{
+$CorrectProof->Print 
+\}
 
 END_TEXT
 Context()->normalStrings;
 main::TEXT($CorrectProof->loadJS);
+
 # Answer Evaluation
 ANS($CorrectProof->cmp);
 
