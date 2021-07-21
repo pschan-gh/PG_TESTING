@@ -21,6 +21,7 @@ $CorrectProof = DraggableProofModular([
 SourceLabel => "Choose from these",
 TargetLabel =>  "Proof of \(a*b=b*a\):",
 NumBuckets => 1,
+Levenshtein => 1,
 );
 
 Context()->texStrings;

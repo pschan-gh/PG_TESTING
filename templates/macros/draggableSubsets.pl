@@ -21,52 +21,43 @@ sub new {
 	
 	my $set = shift || []; 
 	my $cosets = shift || []; 
-	# my %options = (
-	# 	SourceLabel => "Choose from these sentences:",
-	# 	TargetLabel => "Your Proof:",
-	# 	# id => "$main::PG->{QUIZ_PREFIX}P$n",
-	# 	@_
-	# );
 	
 	my $numProvided = scalar(@$set);
 	my @order = main::shuffle($numProvided);
 	my @unorder = main::invert(@order);
 
 	my $shuffled_set = [ map {$set->[$_]} @order ];
+	
+	warn main::pretty_print [ @order ];
+	warn main::pretty_print $set;
 	warn main::pretty_print $shuffled_set;
 	
-	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};
-	warn $ans_input_id;
+	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};	
+	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, AllowNewBuckets => 1);	
 	
-	my $dnd = new DragNDrop($ans_input_id, AllowNewBuckets => 1);
-	
-	my $previous = $dnd->getPrevious;
+	my $previous = $dnd->getPrevious;	
 	
 	if ($previous eq "") {
-		$dnd->addBucket($shuffled_set, '', '');
+		$dnd->addBucket([0..$numProvided-1]);
 	} else {
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
 		for(my $i = 0; $i < @matches; $i++) {
-			my $match = @matches[$i] =~ s/\(|\)//gr;
-			# warn $match;
+			my $match = @matches[$i] =~ s/\(|\)//gr;			
 			my $removable = $i == 0 ? 0 : 1;
-			warn main::pretty_print [ map{ $shuffled_set->[$_] } split(',', $match) ];
-			$dnd->addBucket([ map{ $shuffled_set->[$_] } split(',', $match) ], '', removable => $removable);
+			my $indices = [ split(',', $match) ];
+			warn main::pretty_print $indices;
+			$dnd->addBucket($indices, '', removable => $removable);
 		}
 	}
 		
 	my @shuffled_cosets_array = ();
 	
-	warn main::pretty_print $cosets;
 	for my $coset ( @$cosets ) {
 		my @shuffled_coset = map {$unorder[$_]} @$coset;
-		warn main::pretty_print [ @shuffled_coset ];
 		push(@shuffled_cosets_array, main::Set(join(',', @shuffled_coset)));
 	}
-	# my $shuffled_cosets_string = join(',', @shuffled_cosets_array);
-	# warn main::pretty_print $shuffled_cosets_string;
+	
 	my $shuffled_cosets = main::List(@shuffled_cosets_array);
-	warn main::pretty_print $shuffled_cosets;
 			
 	$self = bless {
 		set => $set,
@@ -77,7 +68,6 @@ sub new {
 		shuffled_cosets => $shuffled_cosets,
 		ans_input_id => $ans_input_id,
 		dnd => $dnd,
-		%options,
 	}, $class;
 	
 	return $self;
@@ -90,8 +80,6 @@ sub loadJS {
 
 sub Print {
 	my $self = shift;
-	warn main::pretty_print 'testing';
-	warn $self->{dnd}->getPrevious;
 	
 	if ($main::displayMode ne "TeX") { # HTML mode
 		return join("\n",

@@ -3,13 +3,13 @@ console.log('dnd wrapper loaded');
 class Bucket {
     constructor(serverData) {
         console.log(serverData);
-        console.log(aggregate);
         this.answerInputId = serverData['answerInputId'];
         this.bucketId = serverData['bucketId'];
-        this.list = serverData['list'];
+        // this.list = serverData['list'];
+        this.indices = serverData['indices'];
         this.label = serverData['label'];
-        this.aggregate = aggregate[this.answerInputId];
-        console.log(this.aggregate);
+        this.aggregateList = serverData['aggregateList']
+        console.log(this.aggregateList);
         
         var answerInputId = this.answerInputId;
         var bucketId = this.bucketId;
@@ -23,12 +23,12 @@ class Bucket {
             $newBucket.append($('<a class="btn remove_bucket">Remove</a>'));
         }
         
-        if (this.list && this.list.length) {
+        if (this.indices && this.indices.length) {
             var $ddList = $('<ol class="dd-list"></ol>').attr('data-bucket-id', this.bucketId);
             var $item;
-            this.list.forEach(listItem => {
-                $item = $('<li><div class="dd-handle">' + listItem['item'] + '</div></li>');
-                $item.addClass('dd-item').attr('data-shuffled-index', listItem['shuffled_index']);
+            this.indices.forEach(index => {
+                $item = $('<li><div class="dd-handle">' + this.aggregateList[index] + '</div></li>');
+                $item.addClass('dd-item').attr('data-shuffled-index', index);
                 $ddList.append($item);
             });
             $newBucket.find('.dd').first().append($ddList);
@@ -94,12 +94,12 @@ class Bucket {
                     $(this).find('ol, .dd-empty').remove();
                 });
                 var $firstBucket = $bucketPool.find('.dd[data-bucket-id="0"]');
-                console.log(el.aggregate['list']);
+                console.log(el.aggregateList);
                 $firstBucket.find('ol, .dd-empty').remove();
-                if ( el.aggregate['list'].length ) {
+                if ( el.aggregateList.length ) {
                     var $ddList = $('<ol class="dd-list"></ol>');                    
                     // $('ol.hidden.default[data-bucket-id="0"] li').each(function() {
-                    el.aggregate['list'].forEach((listItem, index) => {
+                    el.aggregateList.forEach((listItem, index) => {
                         var $item = $('<li class="dd-item"><div class="dd-handle">' + listItem + '</div></li>');
                         $item.attr('data-shuffled-index', index);
                         $ddList.append($item);

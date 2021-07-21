@@ -18,6 +18,7 @@ sub new {
     my $class = ref($self) || $self;
     
     my $answer_input_id = shift;
+    my $aggregate_list = shift;
     my %options = (
 		AllowNewBuckets => 0,
 		@_
@@ -25,10 +26,13 @@ sub new {
     
     my $previous = $main::inputs_ref->{$answer_input_id} || "";
     warn $previous;  
+    
+    warn main::pretty_print $aggregate_list;
+    
     $self = bless {        
         answer_input_id => $answer_input_id,        
         bucket_list => [],
-        aggregate_list => [],
+        aggregate_list => $aggregate_list,
         previous => $previous,
         %options,
     }, $class;
@@ -40,8 +44,7 @@ sub addBucket {
     my $bucket_id = $n++;
     my $self = shift; 
     
-    my $list = shift || [];
-    # my $container_id = shift || '';
+    my $indices = shift || [];
     my $label = shift || ''; 
     my %options = (
 		removable => 0,
@@ -49,16 +52,16 @@ sub addBucket {
 	);  
     
     my $bucket = {
-        list => $list,
+        indices => $indices,
+        list => [ map { $self->{aggregate_list}->[$_] } @$indices ],
         # container_id => $container_id,
         bucket_id => $bucket_id,
         label => $label,
         removable => $options{removable},
     };
+    warn main::pretty_print $bucket;
     push(@{$self->{bucket_list}}, $bucket);
-    push(@{$self->{aggregate_list}}, @{$list});
-
-    warn main::pretty_print [ @{$self->{aggregate_list}} ];
+    
 }
 
 sub getPrevious {
@@ -76,44 +79,21 @@ sub toHTML {
     my @optionsList = ();
     
     for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
-        my $bucket = $self->{bucket_list}->[$i];        
-        # $out .= "<div class='hidden bucket' data-bucket-id='".$bucket->{bucket_id}."'>";
-        # $out .= "<div class='label'>".$bucket->{label}."</div>"; 
-        # $out .= "<ol class='answer'>";
-        my $list = [];
-        if ($previous eq "") {
-            for ( my $j = 0; $j < @{ $bucket->{list} }; $j++ ) {
-                push (@$list, {'shuffled_index' => $j, 'item' => $bucket->{list}->[$j]}) ;
-            }
-        } else {
-            my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
-            my @refList = split(',' , $matches[$i] =~ s/\(|\)|\s*//gr);
-            warn main::pretty_print [ @refList ];
-            $list = [];
-            for my $ref ( @refList ) {
-                # push(@$list, $self->{aggregate_list}->[$ref]);
-                push (@$list, {'shuffled_index' => $ref, 'item' => $self->{aggregate_list}->[$ref]});
-            }            
-        }
+        my $bucket = $self->{bucket_list}->[$i];                
         my $DragNDropOptions =  JSON->new->encode({                
-            # containerId => 'nestable-'.$bucket->{container_id}.'-container',
             bucketId => $bucket->{bucket_id},
             answerInputId => $self->{answer_input_id},
             removable => $bucket->{removable},            
             label => $bucket->{label},
-            list => $list,
+            # list => $list,
+            indices => $bucket->{indices},
+            aggregateList => $self->{aggregate_list},
         });
         warn main::pretty_print $DragNDropOptions;
         push(@optionsList, $DragNDropOptions);
-        # $out .= "</ol>";
-        # $out .= "</div>";         
     }
-    my $aggregate = JSON->new->encode({
-        list => $self->{aggregate_list},
-    });
     
     $out .= "\n<script type='text/javascript'>";
-    $out .= "\nvar aggregate = {".$self->{answer_input_id}.": $aggregate}";
     for $options ( @optionsList ) {
         $out .= "\nnew Bucket($options);";
     }

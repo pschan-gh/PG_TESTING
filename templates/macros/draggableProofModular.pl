@@ -10,7 +10,6 @@ loadMacros("PGchoicemacros.pl",
 
 sub _draggableProofModular_init {
 	PG_restricted_eval("sub DraggableProofModular {new draggableProofModular(\@_)}");
-
 }
 
 package draggableProofModular;
@@ -41,7 +40,7 @@ sub new {
 	
 	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};
 	warn $ans_input_id;
-	my $dnd = new DragNDrop($ans_input_id, AllowNewBuckets => 0);
+	my $dnd = new DragNDrop($ans_input_id, $shuffled_lines, AllowNewBuckets => 0);
 	
 	my $proof = $options{NumBuckets} == 2 ? 
 	main::List(main::List(@unorder[$numNeeded .. $numProvided - 1]), main::List(@unorder[0..$numNeeded-1]))
@@ -60,12 +59,27 @@ sub new {
 		%options,
 	}, $class;
 	
-	if ($self->{NumBuckets} == 2) {
-		$dnd->addBucket($shuffled_lines, $options{'SourceLabel'});
-		$dnd->addBucket([], $options{'TargetLabel'});
-	} elsif ($self->{NumBuckets} == 1) {
-		$dnd->addBucket($shuffled_lines, $options{'TargetLabel'});
+	my $previous = $dnd->getPrevious;
+	if ($previous eq "") {
+		if ($self->{NumBuckets} == 2) {
+			$dnd->addBucket([0..$numProvided-1], $options{'SourceLabel'});
+			$dnd->addBucket([], $options{'TargetLabel'});
+		} elsif ($self->{NumBuckets} == 1) {
+			$dnd->addBucket([0..$numProvided-1], $options{'TargetLabel'});
+		}
+	} else {
+		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
+		if ($self->{NumBuckets} == 2) {
+			my $indices1 = [ split(',', @matches[0] =~ s/\(|\)//gr) ];		
+			$dnd->addBucket($indices1, $options{'SourceLabel'});		
+			my $indices2 = [ split(',', @matches[1] =~ s/\(|\)//gr) ];
+			$dnd->addBucket($indices2, $options{'TargetLabel'});
+		} else {
+			my $indices1 = [ split(',', @matches[0] =~ s/\(|\)//gr) ];
+			$dnd->addBucket($indices1, $options{'TargetLabel'});
+		}
 	}
+	
 		
 	return $self;
 }
