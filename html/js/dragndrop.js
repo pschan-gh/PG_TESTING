@@ -56,7 +56,7 @@ class DragNDropBucket {
         console.log('updating ans');
         console.log(this.answerInputId);
         var buckets = [];
-        $('.dd').each(function() {
+        $(this.bucketPool).find('.dd').each(function() {
             var list = [];
             $(this).find('li.dd-item').each(function() {
                 list.push($(this).attr('data-shuffled-index'));

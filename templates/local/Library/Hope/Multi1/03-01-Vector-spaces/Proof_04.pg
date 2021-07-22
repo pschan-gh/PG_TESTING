@@ -17,7 +17,7 @@ DOCUMENT();
 
 loadMacros(
   "PGstandard.pl",
-  "draggableProof.pl",
+  "draggableProofModular.pl",
   "MathObjects.pl",
   "PGML.pl",
   "PGcourse.pl"
@@ -32,7 +32,7 @@ $sourcelabel = "${BBOLD}Statements to choose from:${EBOLD} Drag these statements
 $targetlabel  =  "${BBOLD}Your proof:${EBOLD} Put the statements in order in this column and press the Submit Answers button.";
 
 
-$Proof1 = DraggableProof([
+$Proof1 = DraggableProofModular([
 "For full generality, suppose that \( V \) is any vector space.",
 "Also, suppose that \( \mathbf{v} \) is any vector in \( V \) and \( r \) is any real number.",
 ],
@@ -45,7 +45,7 @@ TargetLabel =>  $targetlabel,
 );
 
 
-$Proof2 = DraggableProof([
+$Proof2 = DraggableProofModular([
 "Suppose \( r \not= 0 \) and \( r \, \mathbf{v} = \mathbf{0} \).",
 "Show \( \mathbf{v} = \mathbf{0} \).",
 "Since \( r \not=0 \)", 
@@ -63,7 +63,7 @@ TargetLabel =>  $targetlabel,
 );
 
 
-$Proof3 = DraggableProof([
+$Proof3 = DraggableProofModular([
 "Suppose that \( \mathbf{v} \not= \mathbf{0} \) and \( r \, \mathbf{v} = \mathbf{0} \).",
 "Show that \( r = 0 \).",
 "If \( r \) were nonzero, then \( r \not= 0 \) and \( r \, \mathbf{v} = \mathbf{0} \) would imply \( \mathbf{v} = \mathbf{0} \) (by part a),",
