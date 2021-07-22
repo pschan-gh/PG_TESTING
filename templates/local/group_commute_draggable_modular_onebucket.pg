@@ -21,6 +21,7 @@ $CorrectProof = DraggableProofModular([
 SourceLabel => "Choose from these",
 TargetLabel =>  "Proof of \(a*b=b*a\):",
 NumBuckets => 1,
+Levenshtein => 1,
 );
 
 Context()->texStrings;
@@ -36,7 +37,9 @@ Let \(a,b\in G\).  We need to show \(a*b=b*a\).
 Drag and rearrange the following lines in the correct order to form the desired proof.
 
 $PAR
-\{ $CorrectProof->Print \}
+\{
+$CorrectProof->Print 
+\}
 
 END_TEXT
 Context()->normalStrings;

@@ -45,7 +45,29 @@ if ($i == 0) {
     ];
 }
 
-$CorrectProof = DraggableSubsets($D6, $ans);
+# $CorrectProof = DraggableSubsets($D6, $ans, [{
+#     label => 'initial',
+#     indices => [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ],
+#     removable => 0
+# }]);
+
+$CorrectProof = DraggableSubsets($D6, $ans, [
+{
+    label => '',
+    indices => [ 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 ],
+    removable => 0
+},
+{
+    label => '',
+    indices => [ 0 ],
+    removable => 1
+},
+{
+    label => '',
+    indices => [ 2 ],
+    removable => 1
+}
+]);
 
 Context()->texStrings;
 
@@ -64,7 +86,6 @@ $PAR
 
 END_TEXT
 Context()->normalStrings;
-
 
 # Answer Evaluation
 

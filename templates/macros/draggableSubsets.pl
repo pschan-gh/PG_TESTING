@@ -19,55 +19,75 @@ sub new {
 	my $self = shift; 
 	my $class = ref($self) || $self;
 	
+	# user arguments
 	my $set = shift || []; 
 	my $cosets = shift || []; 
-	# my %options = (
-	# 	SourceLabel => "Choose from these sentences:",
-	# 	TargetLabel => "Your Proof:",
-	# 	# id => "$main::PG->{QUIZ_PREFIX}P$n",
-	# 	@_
-	# );
+	my $default_buckets = shift || [];
+	# end user arguments
 	
 	my $numProvided = scalar(@$set);
 	my @order = main::shuffle($numProvided);
 	my @unorder = main::invert(@order);
 
 	my $shuffled_set = [ map {$set->[$_]} @order ];
-	# warn main::pretty_print $shuffled_lines;
 	
-	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};
-	warn $ans_input_id;
+	warn main::pretty_print $default_buckets;
+	my $default_shuffled_buckets = [];
+	if (@$default_buckets) {
+		for my $default_bucket (@$default_buckets) {
+			warn main::pretty_print $default_bucket->{indices};
+			my $shuffled_indices = [ map {$unorder[$_]} @{ $default_bucket->{indices} } ];
+			warn main::pretty_print $shuffled_indices;
+			my $default_shuffled_bucket = { 
+				label => $default_bucket->{label}, 
+				indices => $shuffled_indices,
+				removable => $default_bucket->{removable},
+			};
+			warn main::pretty_print $default_shuffled_bucket;
+			push(@$default_shuffled_buckets, $default_shuffled_bucket);			
+		} 
+	} else {
+		push(@$default_shuffled_buckets, [ { 
+			label => '', 
+			indices => [ 0..$numProvided-1 ]
+		} ]);
+	}
+	warn main::pretty_print $default_shuffled_buckets;
 	
-	my $dnd = new DragNDrop($ans_input_id, AllowNewBuckets => 1);
+	
+	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};	
+	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, $default_shuffled_buckets, AllowNewBuckets => 1);	
 	
 	my $previous = $dnd->getPrevious;
+	warn 'previous';
+	warn main::pretty_print $previous; 
 	
-	if ($previous eq "") {
-		$dnd->addBucket($shuffled_set, '', '');
+	if ($previous eq '') {
+		warn 'no prev';
+		for my $default_bucket ( @$default_shuffled_buckets ) {
+			warn $default_bucket;
+			$dnd->addBucket($default_bucket->{indices}, $default_bucket->{label});
+		}
 	} else {
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
 		for(my $i = 0; $i < @matches; $i++) {
-			my $match = @matches[$i] =~ s/\(|\)//gr;
-			# warn $match;
-			my $removable = $i == 0 ? 0 : 1;
-			warn main::pretty_print [ map{ $shuffled_set->[$_] } split(',', $match) ];
-			$dnd->addBucket([ map{ $shuffled_set->[$_] } split(',', $match) ], '', removable => $removable);
+			my $match = @matches[$i] =~ s/\(|\)//gr;			
+			my $indices = [ split(',', $match) ];
+			warn main::pretty_print $indices;
+			my $label = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{label} : '';
+			my $removable = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{removable} : 1;
+			$dnd->addBucket($indices, $label, removable => $removable);
 		}
-	}
+	}	
 		
 	my @shuffled_cosets_array = ();
-	
-	warn main::pretty_print $cosets;
 	for my $coset ( @$cosets ) {
 		my @shuffled_coset = map {$unorder[$_]} @$coset;
-		warn main::pretty_print [ @shuffled_coset ];
 		push(@shuffled_cosets_array, main::Set(join(',', @shuffled_coset)));
-	}
-	# my $shuffled_cosets_string = join(',', @shuffled_cosets_array);
-	# warn main::pretty_print $shuffled_cosets_string;
+	}	
 	my $shuffled_cosets = main::List(@shuffled_cosets_array);
-	warn main::pretty_print $shuffled_cosets;
 			
+	
 	$self = bless {
 		set => $set,
 		shuffled_set => $shuffled_set,
@@ -77,7 +97,6 @@ sub new {
 		shuffled_cosets => $shuffled_cosets,
 		ans_input_id => $ans_input_id,
 		dnd => $dnd,
-		%options,
 	}, $class;
 	
 	return $self;
@@ -85,8 +104,6 @@ sub new {
 
 sub Print {
 	my $self = shift;
-	warn main::pretty_print 'testing';
-	warn $self->{dnd}->getPrevious;
 	
 	if ($main::displayMode ne "TeX") { # HTML mode
 		return join("\n",
