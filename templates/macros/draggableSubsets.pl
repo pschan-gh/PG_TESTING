@@ -36,7 +36,7 @@ sub new {
 	if (@$default_buckets) {
 		for my $default_bucket (@$default_buckets) {
 			warn main::pretty_print $default_bucket->{indices};
-			my $shuffled_indices = [ map {$order[$_]} @{ $default_bucket->{indices} } ];
+			my $shuffled_indices = [ map {$unorder[$_]} @{ $default_bucket->{indices} } ];
 			warn main::pretty_print $shuffled_indices;
 			my $default_shuffled_bucket = { 
 				label => $default_bucket->{label}, 
@@ -72,10 +72,10 @@ sub new {
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
 		for(my $i = 0; $i < @matches; $i++) {
 			my $match = @matches[$i] =~ s/\(|\)//gr;			
-			my $removable = $i == 0 ? 0 : 1;
 			my $indices = [ split(',', $match) ];
 			warn main::pretty_print $indices;
 			my $label = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{label} : '';
+			my $removable = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{removable} : '';
 			$dnd->addBucket($indices, $label, removable => $removable);
 		}
 	}	
