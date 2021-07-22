@@ -19,9 +19,11 @@ sub new {
 	my $self = shift; 
 	my $class = ref($self) || $self;
 	
+	# user arguments
 	my $set = shift || []; 
 	my $cosets = shift || []; 
-	my $default_indices = shift || [];
+	my $default_buckets = shift || [];
+	# end user arguments
 	
 	my $numProvided = scalar(@$set);
 	my @order = main::shuffle($numProvided);
@@ -29,36 +31,48 @@ sub new {
 
 	my $shuffled_set = [ map {$set->[$_]} @order ];
 	
-	warn main::pretty_print [ @order ];
-	warn main::pretty_print $set;
-	warn main::pretty_print $shuffled_set;
+	# warn main::pretty_print [ @order ];
+	# warn main::pretty_print $set;
+	# warn main::pretty_print $shuffled_set;
 	
-	warn main::pretty_print $default_indices;
-	my @shuffled_defaults = ();
-	if (@$default_indices) {
-		for my $default (@$default_indices) {
-			my @shuffled_default = map {$order[$_]} @$default;
-			push(@shuffled_defaults, [ @shuffled_default ]);
+	warn main::pretty_print $default_buckets;
+	my $default_shuffled_buckets = [];
+	if (@$default_buckets) {
+		for my $default_bucket (@$default_buckets) {
+			warn main::pretty_print $default_bucket->{indices};
+			my $shuffled_indices = [ map {$order[$_]} @{ $default_bucket->{indices} } ];
+			warn main::pretty_print $shuffled_indices;
+			my $default_shuffled_bucket = { 
+				label => $default_bucket->{label}, 
+				indices => $shuffled_indices,
+				removable => $default_bucket->{removable},
+			};
+			warn main::pretty_print $default_shuffled_bucket;
+			push(@$default_shuffled_buckets, $default_shuffled_bucket);			
 		} 
 	} else {
-		@shuffled_defaults = ( [ 0..$numProvided-1 ] );
+		push(@$default_shuffled_buckets, [ { 
+			label => '', 
+			indices => [ 0..$numProvided-1 ]
+		} ]);
 	}
-	warn main::pretty_print [ @shuffled_defaults ];
+	warn main::pretty_print $default_shuffled_buckets;
 	
-	my $shuffled_defaults = [ @shuffled_defaults ];
+	
 	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};	
-	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, $shuffled_defaults, AllowNewBuckets => 1);	
+	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, $default_shuffled_buckets, AllowNewBuckets => 1);	
 	
-	my $previous = $dnd->getPrevious;	
-	warn main::pretty_print $previous;
-	warn $previous; 
-	if ($previous == []) {
-		for my $default ( @shuffled_defaults ) {
-			warn $default;
-			$dnd->addBucket($default);
+	my $previous = $dnd->getPrevious;
+	warn 'previous';
+	warn main::pretty_print $previous; 
+	
+	if ($previous eq '') {
+		warn 'no prev';
+		for my $default_bucket ( @$default_shuffled_buckets ) {
+			warn $default_bucket;
+			$dnd->addBucket($default_bucket->{indices}, $default_bucket->{label});
 		}
 	} else {
-		warn $previous;
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
 		for(my $i = 0; $i < @matches; $i++) {
 			my $match = @matches[$i] =~ s/\(|\)//gr;			

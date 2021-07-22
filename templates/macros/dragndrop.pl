@@ -20,25 +20,24 @@ sub new {
     
     my $answer_input_id = shift;
     my $aggregate_list = shift;
-    my $defaults = shift;
+    my $default_buckets = shift;
     my %options = (
 		AllowNewBuckets => 0,
 		@_
 	);
-    warn main::pretty_print $defaults;
+    warn main::pretty_print $default_buckets;
     warn main::pretty_print $answer_input_id;
-    
-    my $previous = $main::inputs_ref->{$answer_input_id} || [];
-    
     warn main::pretty_print $aggregate_list;
+    my $previous = $main::inputs_ref->{$answer_input_id} || '';
+
     warn main::pretty_print $previous;
     
     $self = bless {        
         answer_input_id => $answer_input_id,        
         bucket_list => [],
         aggregate_list => $aggregate_list,
-        previous => $previous,
-        defaults => $defaults,
+        default_buckets => $default_buckets,
+        previous => $previous,        
         %options,
     }, $class;
             
@@ -49,8 +48,8 @@ sub addBucket {
     my $bucket_id = $n++;
     my $self = shift; 
     
-    my $indices = shift || [];
-    my $label = shift || ''; 
+    my $indices = shift;
+    my $label = shift; 
     my %options = (
 		removable => 0,
 		@_
@@ -79,18 +78,15 @@ sub toHTML {
     
     my $out = '';
     $out .= "<div class='bucket_pool' data-ans='$self->{answer_input_id}'>";
-    my $previous = $self->{previous};
-    
-    
-    warn $self->{bucket_list};
-    
-    warn main::pretty_print $self->{defaults};
-    for (my $i = 0; $i < @{$self->{defaults}}; $i++) {
-        my $default = $self->{defaults}->[$i];
-        $out .= "<div class='hidden default bucket' data-bucket-id='$i'>";
-        $out .= "<div class='label'></div>"; 
+        
+    warn 'default buckets';
+    warn main::pretty_print $self->{default_buckets};
+    for (my $i = 0; $i < @{ $self->{default_buckets} }; $i++) {
+        my $default_bucket = $self->{default_buckets}->[$i];
+        $out .= "<div class='hidden default bucket' data-bucket-id='$i' data-removable='$default_bucket->{removable}'>";
+        $out .= "<div class='label'>$default_bucket->{label}</div>"; 
         $out .= "<ol class='answer'>";
-        for my $j ( @{$default} ) {
+        for my $j ( @{$default_bucket->{indices}} ) {
             $out .= "<li data-shuffled-index='$j'>$self->{aggregate_list}->[$j]</li>";
         }
         $out .= "</ol></div>";
@@ -99,29 +95,10 @@ sub toHTML {
     for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
         my $bucket = $self->{bucket_list}->[$i];
         warn main::pretty_print $bucket;             
-        # my $DragNDropOptions =  JSON->new->encode({                
-        #     # bucketId => $bucket->{bucket_id},
-        #     # answerInputId => $self->{answer_input_id},
-        #     # removable => $bucket->{removable},            
-        #     # label => $bucket->{label},
-        #     # list => $list,
-        #     # indices => $bucket->{indices},
-        #     # aggregateList => $self->{aggregate_list},
-        # });
         $out .= "<div class='hidden past_answers bucket' data-bucket-id='$bucket->{bucket_id}' data-removable='$bucket->{removable}'>";
         $out .= "<div class='label'>$bucket->{label}</div>"; 
         $out .= "<ol class='answer'>";
-        # if ($previous eq "") {
-        #     for (my $j = 0; $j < @{$bucket->{list}}; $j++) {
-        #         $out .= "<li data-shuffled-index='".$j."'>".$bucket->{list}->[$j]."</li>";
-        #     }
-        # } else {
-        #     warn main::pretty_print $bucket->{indices};
-        #     warn main::pretty_print $self->{aggregate_list};
-        #     for my $index ( @{$bucket->{indices}} ) {
-        #         $out .= "<li data-shuffled-index='".$index."'>".$self->{aggregate_list}->[$index]."</li>";
-        #     }
-        # }
+        
         for my $index ( @{$bucket->{indices}} ) {
             $out .= "<li data-shuffled-index='".$index."'>".$self->{aggregate_list}->[$index]."</li>";
         }
@@ -129,11 +106,6 @@ sub toHTML {
         $out .= "</div>"; 
     }
     
-    # $out .= "\n<script type='text/javascript'>";
-    # for $options ( @optionsList ) {
-    #     $out .= "\nnew Bucket($options);";
-    # }
-    # $out .= "\n</script>";
     $out .= '</div>';
     $out .= "<br clear='all'><div><a class='btn reset_buckets'>reset</a>";    
     if ($self->{AllowNewBuckets} == 1) {
@@ -145,7 +117,6 @@ sub toHTML {
 
 sub ans_rule {
 	my $self = shift;
-    # my @list = @{ $self->{list} };
     if ($main::displayMode eq 'TeX') {
         return "\\begin{itemize}\\item".join("\n\n\\item\n" , @{ $self->{aggregate_list} })."\\end{itemize}";
     }

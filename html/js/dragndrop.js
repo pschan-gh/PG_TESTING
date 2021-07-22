@@ -6,10 +6,10 @@ class DragNDropBucket {
         console.log(pgData);
         this.answerInputId = pgData['answerInputId'];
         this.bucketId = pgData['bucketId'];
-        // this.indices = serverData['indices'];
         this.label = pgData['label'] || '';
         this.removable = pgData['removable'];
         this.default = pgData['default'];
+        // this.indices = serverData['indices'];        
         // this.aggregateList = serverData['aggregateList']
         // console.log(this.aggregateList);
         this.bucketPool = $('.bucket_pool[data-ans="' + this.answerInputId + '"]').first()[0];
@@ -35,6 +35,7 @@ class DragNDropBucket {
     
         $newBucket.append($('<div class="nestable-label">' + label + '</div>'));
         $newBucket.append($('<div class="dd" data-bucket-id="' + bucketId + '"></div>'));
+        
         if (removable != 0) {
             $newBucket.append($('<a class="btn remove_bucket">Remove</a>'));
         }
@@ -137,7 +138,7 @@ $('div.bucket_pool').each(function() {
                 answerInputId : answerInputId,
                 bucketId : $(this).attr('data-bucket-id'),
                 label : $(this).find('.label').html(),
-                removable : $(this).attr('removable'),
+                removable : $(this).attr('data-removable'),
                 default: false,
             });
         });
