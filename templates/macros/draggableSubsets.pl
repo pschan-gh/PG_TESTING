@@ -31,10 +31,6 @@ sub new {
 
 	my $shuffled_set = [ map {$set->[$_]} @order ];
 	
-	# warn main::pretty_print [ @order ];
-	# warn main::pretty_print $set;
-	# warn main::pretty_print $shuffled_set;
-	
 	warn main::pretty_print $default_buckets;
 	my $default_shuffled_buckets = [];
 	if (@$default_buckets) {
@@ -79,7 +75,8 @@ sub new {
 			my $removable = $i == 0 ? 0 : 1;
 			my $indices = [ split(',', $match) ];
 			warn main::pretty_print $indices;
-			$dnd->addBucket($indices, '', removable => $removable);
+			my $label = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{label} : '';
+			$dnd->addBucket($indices, $label, removable => $removable);
 		}
 	}	
 		

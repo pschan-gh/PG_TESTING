@@ -9,9 +9,6 @@ class DragNDropBucket {
         this.label = pgData['label'] || '';
         this.removable = pgData['removable'];
         this.default = pgData['default'];
-        // this.indices = serverData['indices'];        
-        // this.aggregateList = serverData['aggregateList']
-        // console.log(this.aggregateList);
         this.bucketPool = $('.bucket_pool[data-ans="' + this.answerInputId + '"]').first()[0];
         
         var $bucketPool = $(this.bucketPool);
@@ -43,7 +40,6 @@ class DragNDropBucket {
         var query = isDefault ==  1 ? '.hidden.default.bucket[data-bucket-id="' + bucketId + '"] ol.answer li' : '.hidden.past_answers.bucket[data-bucket-id="' + bucketId + '"] ol.answer li' 
         
         if ($bucketPool.find(query).length) {
-            // var $ddList = $('<ol class="dd-list"></ol>').attr('data-bucket-id', bucketId);            
             var $ddList = $('<ol class="dd-list"></ol>');
             $bucketPool.find(query).each(function(index) {
                 var $item = $('<li><div class="dd-handle">' + $(this).html() + '</div></li>');
@@ -123,7 +119,6 @@ class DragNDropBucket {
                 });  
                 el._nestableUpdate();
             });
-            // el._refreshCSS();
         });    
     }
         

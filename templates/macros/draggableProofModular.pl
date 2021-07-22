@@ -40,7 +40,12 @@ sub new {
 	
 	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};
 	warn $ans_input_id;
-	my $dnd = new DragNDrop($ans_input_id, $shuffled_lines, AllowNewBuckets => 0);
+	my $dnd;
+	if ($options{NumBuckets} == 2) {
+		$dnd = new DragNDrop($ans_input_id, $shuffled_lines, [{indices=>[0..$numProvided-1], label=>$options{'SourceLabel'}}, {indices=>[], label=>$options{'TargetLabel'}}], AllowNewBuckets => 0);
+	} elsif($options{NumBuckets} == 1) {
+		$dnd = new DragNDrop($ans_input_id, $shuffled_lines, [{indices=>[0..$numProvided-1], label=>$options{'TargetLabel'}}], AllowNewBuckets => 0);
+	}
 	
 	my $proof = $options{NumBuckets} == 2 ? 
 	main::List(main::List(@unorder[$numNeeded .. $numProvided - 1]), main::List(@unorder[0..$numNeeded-1]))
@@ -60,6 +65,7 @@ sub new {
 	}, $class;
 	
 	my $previous = $dnd->getPrevious;
+	
 	if ($previous eq "") {
 		if ($self->{NumBuckets} == 2) {
 			$dnd->addBucket([0..$numProvided-1], $options{'SourceLabel'});
@@ -79,7 +85,6 @@ sub new {
 			$dnd->addBucket($indices1, $options{'TargetLabel'});
 		}
 	}
-	
 		
 	return $self;
 }

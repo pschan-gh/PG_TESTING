@@ -31,8 +31,8 @@
 .dd-handle {
 	background: #F5DEB3 !important;
 	border: 1px solid #388E8E !important;
-	text-align: center;
-	height: auto;
+	text-align: center !important;
+	height: auto !important;
 }
 .dd-handle:hover {
 	cursor: pointer;
