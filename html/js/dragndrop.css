@@ -1,10 +1,10 @@
 .dd-container {
 	width: 350px;
 	float: left;
-	margin: 10px;
+	margin: 10px !important;
 	padding: 0;
 	color: #000000;
-	border: 1px solid #388E8E;
+	border: 1px solid #388E8E !important;
 	border-radius: 5px;
 	text-align: center;
 }
@@ -22,14 +22,14 @@
 .dd-empty, .dd-handle, .dd-placeholder {
 	display: block;
 	position: relative;
-	margin: 0 10px 10px 10px;
-	padding: 4px;
+	margin: 0 10px 10px 10px !important;
+	padding: 4px !important;
 	min-height: 30px;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
 .dd-handle {
-	background: #F5DEB3 !important;
+	background: #f5f5f5 !important;
 	border: 1px solid #388E8E !important;
 	text-align: center !important;
 	height: auto !important;

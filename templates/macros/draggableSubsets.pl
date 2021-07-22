@@ -75,7 +75,7 @@ sub new {
 			my $indices = [ split(',', $match) ];
 			warn main::pretty_print $indices;
 			my $label = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{label} : '';
-			my $removable = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{removable} : '';
+			my $removable = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{removable} : 1;
 			$dnd->addBucket($indices, $label, removable => $removable);
 		}
 	}	

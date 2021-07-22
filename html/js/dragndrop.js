@@ -14,6 +14,7 @@ class DragNDropBucket {
         var $bucketPool = $(this.bucketPool);
         var $newBucket = this._newBucket(this.bucketId, this.label, this.removable);
         $bucketPool.append($newBucket);
+        // $newBucket.css('background-color', 'hsla(' + ( ((1 + this.bucketId) * 45) % 360 ) + ', 40%, 90%, 1)');
         
         var el = this;
         $newBucket.find('.dd').nestable({
@@ -48,7 +49,7 @@ class DragNDropBucket {
             });
             $newBucket.find('.dd').first().append($ddList);
         }
-        
+        $newBucket.css('background-color', 'hsla(' + (((1 + bucketId) * 45) % 360) + ', 40%, 90%, 1)');
         return $newBucket;
     }
         
@@ -104,6 +105,7 @@ class DragNDropBucket {
                     var label = $(this).find('.label').first().html() || '';
                     var $bucket = el._newBucket($(this).attr('data-bucket-id'), $(this).find('.label').first().html(), $(this).attr('data-removable'), 1);                    
                     $bucketPool.append($bucket);
+                    // $bucket.css('background-color', 'hsla(' + (((1 + bucketId) * 45) % 360) + ', 40%, 90%, 1)');
                 });
                 
                 $bucketPool.find('.dd').each(function() {

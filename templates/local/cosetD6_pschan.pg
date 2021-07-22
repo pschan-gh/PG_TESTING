@@ -65,7 +65,7 @@ $CorrectProof = DraggableSubsets($D6, $ans, [
 {
     label => '',
     indices => [ 2 ],
-    removable => 0
+    removable => 1
 }
 ]);
 
