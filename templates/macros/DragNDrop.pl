@@ -12,7 +12,7 @@ sub _dragndrop_init {
 
 package DragNDrop;
 
-my $n = 0;
+my $bucket_id = 1;
 
 sub new {    
 	my $self = shift; 
@@ -25,28 +25,27 @@ sub new {
 		AllowNewBuckets => 0,
 		@_
 	);
-    warn main::pretty_print $default_buckets;
-    warn main::pretty_print $answer_input_id;
-    warn main::pretty_print $aggregate_list;
+
+    # get previous answers    
     my $previous = $main::inputs_ref->{$answer_input_id} || '';
 
-    warn main::pretty_print $previous;
-    
     $self = bless {        
         answer_input_id => $answer_input_id,        
         bucket_list => [],
         aggregate_list => $aggregate_list,
         default_buckets => $default_buckets,
-        previous => $previous,        
+        previous => $previous,
+        # bucket_id => 1,  
         %options,
     }, $class;
             
     return $self;
 }
 
-sub addBucket {
-    my $bucket_id = $n++;
+sub addBucket {    
     my $self = shift; 
+    
+    my $bucket_id = $bucket_id++;
     
     my $indices = shift;
     my $label = shift; 
@@ -63,7 +62,6 @@ sub addBucket {
         label => $label,
         removable => $options{removable},
     };
-    warn main::pretty_print $bucket;
     push(@{$self->{bucket_list}}, $bucket);
     
 }
@@ -79,8 +77,7 @@ sub toHTML {
     my $out = '';
     $out .= "<div class='bucket_pool' data-ans='$self->{answer_input_id}'>";
         
-    warn 'default buckets';
-    warn main::pretty_print $self->{default_buckets};
+    # default buckets;
     for (my $i = 0; $i < @{ $self->{default_buckets} }; $i++) {
         my $default_bucket = $self->{default_buckets}->[$i];
         $out .= "<div class='hidden default bucket' data-bucket-id='$i' data-removable='$default_bucket->{removable}'>";
@@ -94,7 +91,6 @@ sub toHTML {
     
     for (my $i = 0; $i < @{$self->{bucket_list}}; $i++) {
         my $bucket = $self->{bucket_list}->[$i];
-        warn main::pretty_print $bucket;             
         $out .= "<div class='hidden past_answers bucket' data-bucket-id='$bucket->{bucket_id}' data-removable='$bucket->{removable}'>";
         $out .= "<div class='label'>$bucket->{label}</div>"; 
         $out .= "<ol class='answer'>";

@@ -4,16 +4,14 @@
 
 loadMacros("PGchoicemacros.pl",
 "MathObjects.pl",
-"dragndrop.pl"
+"DragNDrop.pl"
 );
 
 sub _draggableSubsets_init {
 	PG_restricted_eval("sub DraggableSubsets {new draggableSubsets(\@_)}");
-
 }
 
 package draggableSubsets;
-# our @ISA = qw(Value::List);
 
 sub new {
 	my $self = shift; 
@@ -31,19 +29,15 @@ sub new {
 
 	my $shuffled_set = [ map {$set->[$_]} @order ];
 	
-	warn main::pretty_print $default_buckets;
 	my $default_shuffled_buckets = [];
 	if (@$default_buckets) {
 		for my $default_bucket (@$default_buckets) {
-			warn main::pretty_print $default_bucket->{indices};
 			my $shuffled_indices = [ map {$unorder[$_]} @{ $default_bucket->{indices} } ];
-			warn main::pretty_print $shuffled_indices;
 			my $default_shuffled_bucket = { 
 				label => $default_bucket->{label}, 
 				indices => $shuffled_indices,
 				removable => $default_bucket->{removable},
 			};
-			warn main::pretty_print $default_shuffled_bucket;
 			push(@$default_shuffled_buckets, $default_shuffled_bucket);			
 		} 
 	} else {
@@ -52,20 +46,14 @@ sub new {
 			indices => [ 0..$numProvided-1 ]
 		} ]);
 	}
-	warn main::pretty_print $default_shuffled_buckets;
-	
-	
+		
 	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};	
 	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, $default_shuffled_buckets, AllowNewBuckets => 1);	
 	
 	my $previous = $dnd->getPrevious;
-	warn 'previous';
-	warn main::pretty_print $previous; 
 	
 	if ($previous eq '') {
-		warn 'no prev';
 		for my $default_bucket ( @$default_shuffled_buckets ) {
-			warn $default_bucket;
 			$dnd->addBucket($default_bucket->{indices}, $default_bucket->{label});
 		}
 	} else {
@@ -73,7 +61,6 @@ sub new {
 		for(my $i = 0; $i < @matches; $i++) {
 			my $match = @matches[$i] =~ s/\(|\)//gr;			
 			my $indices = [ split(',', $match) ];
-			warn main::pretty_print $indices;
 			my $label = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{label} : '';
 			my $removable = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{removable} : 1;
 			$dnd->addBucket($indices, $label, removable => $removable);

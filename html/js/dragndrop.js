@@ -1,9 +1,6 @@
-console.log('dnd wrapper loaded');
-
 (function() {
 class DragNDropBucket {
     constructor(pgData) {
-        console.log(pgData);
         this.answerInputId = pgData['answerInputId'];
         this.bucketId = pgData['bucketId'];
         this.label = pgData['label'] || '';
@@ -14,7 +11,6 @@ class DragNDropBucket {
         var $bucketPool = $(this.bucketPool);
         var $newBucket = this._newBucket(this.bucketId, this.label, this.removable);
         $bucketPool.append($newBucket);
-        // $newBucket.css('background-color', 'hsla(' + ( ((1 + this.bucketId) * 45) % 360 ) + ', 40%, 90%, 1)');
         
         var el = this;
         $newBucket.find('.dd').nestable({
@@ -49,13 +45,11 @@ class DragNDropBucket {
             });
             $newBucket.find('.dd').first().append($ddList);
         }
-        $newBucket.css('background-color', 'hsla(' + (((1 + bucketId) * 45) % 360) + ', 40%, 90%, 1)');
+        $newBucket.css('background-color', 'hsla(' + ((100 + (bucketId)*100) % 360) + ', 40%, 90%, 1)');
         return $newBucket;
     }
         
     _nestableUpdate(e) {
-        console.log('updating ans');
-        console.log(this.answerInputId);
         var buckets = [];
         $(this.bucketPool).find('.dd').each(function() {
             var list = [];
@@ -64,16 +58,13 @@ class DragNDropBucket {
             });
             buckets.push('(' + list.join(",") + ')');
         });
-        console.log(buckets);
         
         $("#" +  this.answerInputId).val(buckets.join(","));
     }
     
     _ddUpdate() {
-        console.log('_ddUpdate');
         var answerInputId = this.answerInputId;
         var $bucketPool = $('.bucket_pool[data-ans="' + answerInputId + '"]').first();
-        console.log($bucketPool);
         var el = this;
         $(function() {
             $bucketPool.parent().find('.add_bucket').off();
@@ -98,14 +89,12 @@ class DragNDropBucket {
             });
             $bucketPool.parent().find('.reset_buckets').off();
             $bucketPool.parent().find('.reset_buckets').click(function() {
-                console.log('clicked');
                 $bucketPool.find('.dd-container').remove();
                 $bucketPool.find('div.hidden.default.bucket').each(function() {
                     var bucketId = $(this).attr('data-bucket-id');
                     var label = $(this).find('.label').first().html() || '';
                     var $bucket = el._newBucket($(this).attr('data-bucket-id'), $(this).find('.label').first().html(), $(this).attr('data-removable'), 1);                    
                     $bucketPool.append($bucket);
-                    // $bucket.css('background-color', 'hsla(' + (((1 + bucketId) * 45) % 360) + ', 40%, 90%, 1)');
                 });
                 
                 $bucketPool.find('.dd').each(function() {
@@ -130,7 +119,6 @@ $('div.bucket_pool').each(function() {
     var answerInputId = $(this).attr('data-ans');
     if ($(this).find('div.bucket.past_answers.hidden').length) {
         $(this).find('div.bucket.past_answers.hidden').each(function() {
-            console.log('bucket');
             new DragNDropBucket({
                 answerInputId : answerInputId,
                 bucketId : $(this).attr('data-bucket-id'),
