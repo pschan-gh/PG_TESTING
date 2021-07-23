@@ -4,10 +4,16 @@
 
 loadMacros("PGchoicemacros.pl",
 "MathObjects.pl",
-"DragNDrop.pl"
+# "DragNDrop.pl"
 );
 
 sub _draggableSubsets_init {
+	$courseHtmlUrl = $envir{htmlURL};
+	# Load jquery nestable from cdnjs.cloudflare.com
+	ADD_CSS_FILE("https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.css", 1);
+	ADD_JS_FILE("https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.js", 1);
+	ADD_CSS_FILE("$courseHtmlUrl/js/dragndrop.css", 1);
+	 ADD_JS_FILE("$courseHtmlUrl/js/dragndrop.js", 1, { defer => undef });
 	PG_restricted_eval("sub DraggableSubsets {new draggableSubsets(\@_)}");
 }
 
@@ -47,10 +53,11 @@ sub new {
 		} ]);
 	}
 		
-	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};	
-	my $dnd = new DragNDrop($ans_input_id, $shuffled_set, $default_shuffled_buckets, AllowNewBuckets => 1);	
+	my $answer_input_id = main::NEW_ANS_NAME() unless $self->{answer_input_id};	
+	my $ans_rule = main::NAMED_HIDDEN_ANS_RULE($answer_input_id);
+	my $dnd = new DragNDrop($answer_input_id, $shuffled_set, $default_shuffled_buckets, AllowNewBuckets => 1);	
 	
-	my $previous = $dnd->getPrevious;
+	my $previous = $main::inputs_ref->{$answer_input_id} || '';
 	
 	if ($previous eq '') {
 		for my $default_bucket ( @$default_shuffled_buckets ) {
@@ -82,8 +89,9 @@ sub new {
 		order => \@order, 
 		unordered => \@unorder,
 		shuffled_cosets => $shuffled_cosets,
-		ans_input_id => $ans_input_id,
+		answer_input_id => $answer_input_id,
 		dnd => $dnd,
+		ans_rule => $ans_rule,
 	}, $class;
 	
 	return $self;
@@ -92,16 +100,21 @@ sub new {
 sub Print {
 	my $self = shift;
 	
+	my $html = $self->{dnd}->toHTML;
+	my $ans_rule = $self->{ans_rule};
+	
 	if ($main::displayMode ne "TeX") { # HTML mode
 		return join("\n",
 			'<div style="min-width:750px;">',
-			$self->{dnd}->ans_rule,
+			$ans_rule,
+			$html,
 			'<br clear="all" />',
-			'</div>'
+			'</div>',
 		);
 	} else { # TeX mode
 		return join("\n",
-			$self->{dnd}->ans_rule,
+			$ans_rule,
+			$html,
 		);
 	}
 }

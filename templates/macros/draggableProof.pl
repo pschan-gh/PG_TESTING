@@ -5,10 +5,16 @@
 loadMacros("PGchoicemacros.pl",
 "MathObjects.pl",
 "levenshtein.pl",
-"DragNDrop.pl"
+ "DragNDrop.pl"
 );
 
 sub _draggableProof_init {
+	$courseHtmlUrl = $envir{htmlURL};
+	# Load jquery nestable from cdnjs.cloudflare.com
+	ADD_CSS_FILE("https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.css", 1);
+	ADD_JS_FILE("https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.js", 1);
+	ADD_CSS_FILE("$courseHtmlUrl/js/dragndrop.css", 1);
+	 ADD_JS_FILE("$courseHtmlUrl/js/dragndrop.js", 1, { defer => undef });
 	PG_restricted_eval("sub DraggableProof {new draggableProof(\@_)}");
 }
 
@@ -36,18 +42,21 @@ sub new {
 
 	my $shuffled_lines = [ map {$lines->[$_]} @order ];
 	
-	my $ans_input_id = main::NEW_ANS_NAME() unless $self->{ans_input_id};
+	my $answer_input_id = main::NEW_ANS_NAME() unless $self->{answer_input_id};
+	my $ans_rule = main::NAMED_HIDDEN_ANS_RULE($answer_input_id);
+	# warn main::pretty_print $ans_rule;
 	
 	my $dnd;
 	if ($options{NumBuckets} == 2) {
-		$dnd = new DragNDrop($ans_input_id, $shuffled_lines, [{indices=>[0..$numProvided-1], label=>$options{'SourceLabel'}}, {indices=>[], label=>$options{'TargetLabel'}}], AllowNewBuckets => 0);
+		$dnd = new DragNDrop($answer_input_id, $shuffled_lines, [{indices=>[0..$numProvided-1], label=>$options{'SourceLabel'}}, {indices=>[], label=>$options{'TargetLabel'}}], AllowNewBuckets => 0);
 	} elsif($options{NumBuckets} == 1) {
-		$dnd = new DragNDrop($ans_input_id, $shuffled_lines, [{indices=>[0..$numProvided-1], label=>$options{'TargetLabel'}}], AllowNewBuckets => 0);
+		$dnd = new DragNDrop($answer_input_id, $shuffled_lines, [{indices=>[0..$numProvided-1], label=>$options{'TargetLabel'}}], AllowNewBuckets => 0);
 	}
 	
 	my $proof = $options{NumBuckets} == 2 ? 
 	main::List(main::List(@unorder[$numNeeded .. $numProvided - 1]), main::List(@unorder[0..$numNeeded-1]))
 	: main::List('('.join(',', @unorder[0..$numNeeded-1]).')');
+		
 		
 	$self = bless {
 		lines => $lines,
@@ -57,12 +66,13 @@ sub new {
 		order => \@order, 
 		unorder => \@unorder,
 		proof => $proof,
-		ans_input_id => $ans_input_id,
+		answer_input_id => $answer_input_id,
 		dnd => $dnd,
+		ans_rule => $ans_rule,
 		%options,
 	}, $class;
 	
-	my $previous = $dnd->getPrevious;
+	my $previous = $main::inputs_ref->{$answer_input_id} || '';
 	
 	if ($previous eq "") {
 		if ($self->{NumBuckets} == 2) {
@@ -86,24 +96,29 @@ sub new {
 		
 	return $self;
 }
-sub loadJS {
-	my $self = shift;
-	return $self->{dnd}->toHTML;
-}
 
 sub Print {
 	my $self = shift;
 
+	if ($main::displayMode eq 'TeX') {
+		return "\\begin{itemize}\\item".join("\n\n\\item\n" , @{ $self->{aggregate_list} })."\\end{itemize}";
+	}
+	
+	my $html = $self->{dnd}->toHTML;
+	my $ans_rule = $self->{ans_rule};
+	
 	if ($main::displayMode ne "TeX") { # HTML mode
 		return join("\n",
 			'<div style="min-width:750px;">',
-			$self->{dnd}->ans_rule,
+			$ans_rule,
+			$html,
 			'<br clear="all" />',
 			'</div>',
 		);
 	} else { # TeX mode
 		return join("\n",
-			$self->{dnd}->ans_rule,
+			$ans_rule,
+			$html,
 		);
 	}
 }
