@@ -8,12 +8,11 @@ loadMacros("PGchoicemacros.pl",
 "DragNDrop.pl"
 );
 
-sub _draggableProofModular_init {
-	PG_restricted_eval("sub DraggableProofModular {new draggableProofModular(\@_)}");
+sub _draggableProof_init {
+	PG_restricted_eval("sub DraggableProof {new draggableProof(\@_)}");
 }
 
-package draggableProofModular;
-# our @ISA = qw(Value::List);
+package draggableProof;
 
 sub new {
 	my $self = shift; 

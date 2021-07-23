@@ -8,7 +8,7 @@ loadMacros(
 TEXT(beginproblem());
 
 Context("Numeric");
-$CorrectProof = DraggableProofModular([
+$CorrectProof = DraggableProof([
 "\(\hphantom{=}\;a*b\)",
 "\(=a*e*b\qquad\) by the defining property of the identity element",
 "\(=a*(a*b*a*b)*b\qquad\) since \(e=(a*b)*(a*b)\)",

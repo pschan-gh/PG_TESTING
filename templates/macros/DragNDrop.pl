@@ -1,4 +1,4 @@
-sub _dragndrop_init {
+sub _DragNDrop_init {
   
   $courseHtmlUrl = $envir{htmlURL};
   # Load jquery nestable from cdnjs.cloudflare.com
