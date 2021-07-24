@@ -5,7 +5,7 @@ package levenshtein;
 sub levenshtein {
     my @ar1 = split /$_[2]/, $_[0];
     my @ar2 = split /$_[2]/, $_[1];
-    # initialize  @dist = ( [0,1,..,n], [1], [2], ..., [m] )
+    
     my @dist = ([0 .. @ar2]);
     $dist[$_][0] = $_ for (1 .. @ar1);
 
@@ -17,4 +17,14 @@ sub levenshtein {
     }
     main::min(1, $dist[-1][-1]/(@ar1));
 }
+
+sub adjacentDamerauLevenshtein {
+    my @ar1 = split /$_[2]/, $_[0];
+    my @ar2 = split /$_[2]/, $_[1];
+    
+    my @da = (0) x (@ar1 + @ar2);
+    
+    
+}
+
 1;
