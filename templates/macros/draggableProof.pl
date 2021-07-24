@@ -1,6 +1,5 @@
 loadMacros("PGchoicemacros.pl",
 "MathObjects.pl",
-# "levenshtein.pl",
 );
 
 sub _draggableProof_init {
