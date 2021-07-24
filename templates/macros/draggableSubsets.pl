@@ -2,18 +2,16 @@
 # To do: display student answers and correct answers in TeX mode properly.
 # To do: put jquery.nestable.js in a universal spot on every webwork server.
 
-loadMacros("PGchoicemacros.pl",
+loadMacros(
+"PGchoicemacros.pl",
 "MathObjects.pl",
-# "DragNDrop.pl"
 );
 
 sub _draggableSubsets_init {
-	$courseHtmlUrl = $envir{htmlURL};
-	# Load jquery nestable from cdnjs.cloudflare.com
 	ADD_CSS_FILE("https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.css", 1);
 	ADD_JS_FILE("https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.js", 1);
-	ADD_CSS_FILE("$courseHtmlUrl/js/dragndrop.css", 1);
-	 ADD_JS_FILE("$courseHtmlUrl/js/dragndrop.js", 1, { defer => undef });
+	ADD_CSS_FILE("js/apps/DragNDrop/dragndrop.css", 0);
+	ADD_JS_FILE("js/apps/DragNDrop/dragndrop.js", 0, { defer => undef });
 	PG_restricted_eval("sub DraggableSubsets {new draggableSubsets(\@_)}");
 }
 
@@ -61,7 +59,7 @@ sub new {
 	
 	if ($previous eq '') {
 		for my $default_bucket ( @$default_shuffled_buckets ) {
-			$dnd->addBucket($default_bucket->{indices}, $default_bucket->{label});
+			$dnd->addBucket($default_bucket->{indices}, label => $default_bucket->{label});
 		}
 	} else {
 		my @matches = ( $previous =~ /(\(\d*(?:,\d+)*\))+/g );
@@ -70,7 +68,7 @@ sub new {
 			my $indices = [ split(',', $match) ];
 			my $label = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{label} : '';
 			my $removable = $i < @$default_shuffled_buckets ? $default_shuffled_buckets->[$i]->{removable} : 1;
-			$dnd->addBucket($indices, $label, removable => $removable);
+			$dnd->addBucket($indices, label => $label, removable => $removable);
 		}
 	}	
 		
@@ -100,22 +98,18 @@ sub new {
 sub Print {
 	my $self = shift;
 	
-	my $html = $self->{dnd}->toHTML;
 	my $ans_rule = $self->{ans_rule};
 	
 	if ($main::displayMode ne "TeX") { # HTML mode
 		return join("\n",
 			'<div style="min-width:750px;">',
 			$ans_rule,
-			$html,
+			$self->{dnd}->HTML,
 			'<br clear="all" />',
 			'</div>',
 		);
 	} else { # TeX mode
-		return join("\n",
-			$ans_rule,
-			$html,
-		);
+	    return $self->{dnd}->TeX;		
 	}
 }
 
