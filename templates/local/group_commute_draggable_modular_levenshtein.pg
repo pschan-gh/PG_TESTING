@@ -2,7 +2,7 @@ DOCUMENT();
 loadMacros(
 "PGstandard.pl",
 "MathObjects.pl",
-"draggableProof.pl",
+"draggableProof.pl"
 );
 
 TEXT(beginproblem());

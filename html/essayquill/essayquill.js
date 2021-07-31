@@ -9,20 +9,20 @@ var mqID = 0;
 $.widget.bridge('uitooltip', $.ui.tooltip);
 
 // https://stackoverflow.com/questions/31093285/how-do-i-get-the-element-being-edited
-function getActiveDiv() {
-    var sel = window.getSelection();
-    var range = sel.getRangeAt(0);
-    var node = document.createElement('span');
-    range.insertNode(node);
-    range = range.cloneRange();
-    range.selectNodeContents(node);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
-    var activeDiv = node.parentNode;
-    node.parentNode.removeChild(node);
-    return activeDiv;
-}
+// function getActiveDiv() {
+//     var sel = window.getSelection();
+//     var range = sel.getRangeAt(0);
+//     var node = document.createElement('span');
+//     range.insertNode(node);
+//     range = range.cloneRange();
+//     range.selectNodeContents(node);
+//     range.collapse(false);
+//     sel.removeAllRanges();
+//     sel.addRange(range);
+//     var activeDiv = node.parentNode;
+//     node.parentNode.removeChild(node);
+//     return activeDiv;
+// }
 
 // https://www.codeproject.com/Questions/703255/How-to-get-caret-index-of-an-editable-div-with-res
 function getCaretPosition(editableDiv) {
