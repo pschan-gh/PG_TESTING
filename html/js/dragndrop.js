@@ -1,4 +1,3 @@
-// (function() {
 function DragNDropIsLoaded() {
     return true;    
 }
@@ -115,24 +114,8 @@ class DragNDropBucket {
         
 }
 
-// $('div.bucket_pool').each(function() {
-//     var answerInputId = $(this).attr('data-ans');
-//     if ($(this).find('div.bucket.past_answers.hidden').length) {
-//         $(this).find('div.bucket.past_answers.hidden').each(function() {
-//             new DragNDropBucket({
-//                 answerInputId : answerInputId,
-//                 bucketId : $(this).attr('data-bucket-id'),
-//                 label : $(this).find('.label').html(),
-//                 removable : $(this).attr('data-removable'),
-//             });
-//         });
-//     } 
-// });
-
-$('#content').attr('data-dndloaded', 'true');
+$('#content').attr('data-dnd-loaded', 'true');
 console.log('dnd loaded');
-// })();
-var DragNDropIsLoaded = 1;
 
 $(function() {
     $('div.bucket_pool').each(function() {
