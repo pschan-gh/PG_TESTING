@@ -112,8 +112,10 @@ ENDDOCUMENT();
 =cut
 ################################################################
 
-loadMacros("PGchoicemacros.pl",
+loadMacros(
+"PGchoicemacros.pl",
 "MathObjects.pl",
+"DragNDrop.pl",
 );
 
 sub _draggableProof_init {

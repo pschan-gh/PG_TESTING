@@ -111,6 +111,7 @@ ENDDOCUMENT();
 loadMacros(
 "PGchoicemacros.pl",
 "MathObjects.pl",
+"DragNDrop.pl",
 );
 
 sub _draggableSubsets_init {
